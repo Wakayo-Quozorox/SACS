@@ -1211,7 +1211,7 @@ void APP_SX1272_setup()
  8000966:	701a      	strb	r2, [r3, #0]
       // Set the node address
       e = BSP_SX1272_setNodeAddress(RX_Addr);
- 8000968:	2008      	movs	r0, #8
+ 8000968:	2001      	movs	r0, #1
  800096a:	f001 fd79 	bl	8002460 <BSP_SX1272_setNodeAddress>
  800096e:	0003      	movs	r3, r0
  8000970:	001a      	movs	r2, r3
@@ -1244,7 +1244,7 @@ void APP_SX1272_setup()
  8000996:	701a      	strb	r2, [r3, #0]
       // Set the node address
       e = BSP_SX1272_setNodeAddress(RX_Addr);
- 8000998:	2008      	movs	r0, #8
+ 8000998:	2001      	movs	r0, #1
  800099a:	f001 fd61 	bl	8002460 <BSP_SX1272_setNodeAddress>
  800099e:	0003      	movs	r3, r0
  80009a0:	001a      	movs	r2, r3

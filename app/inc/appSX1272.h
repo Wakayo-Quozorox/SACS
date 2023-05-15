@@ -1,7 +1,7 @@
 /*
  * appSX1272.h
  *
- *  Created on: 25 août 2020
+ *  Created on: 25 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -16,7 +16,7 @@
 
 //Main parameters (to be changed)
 #define TX_Addr BROADCAST_ADDR
-#define RX_Addr 8 //address of the node
+#define RX_Addr 1 //address of the node
 
 #define OutPower POW_14 //min -1, max 14
 #define TypeModulation 1 //0: LORA, 1:FSK
