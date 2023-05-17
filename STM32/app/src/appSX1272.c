@@ -1,7 +1,7 @@
 /*
  * appSX1272.c
  *
- *  Created on: 25 août 2020
+ *  Created on: 25 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -15,7 +15,7 @@
 extern SX1272status currentstate;
 
 ///////////////////////////////////////////////////////////////
-// Déclaration variables globales
+// Dï¿½claration variables globales
 ///////////////////////////////////////////////////////////////
 static char LgMsg = 0;
 static char Message[] = "Salut Francis, comment vas-tu ?";
@@ -75,7 +75,7 @@ void APP_SX1272_setup()
   if (ConfigOK == 1)
   {
 	//////////////////////////////////////////////////////////////////////
-  //config supplémentaire mode LORA
+  //config supplï¿½mentaire mode LORA
 	//////////////////////////////////////////////////////////////////////
     if(type_modulation==0)
     {
@@ -95,7 +95,7 @@ void APP_SX1272_setup()
       currentstate._maxRetries = MaxNbRetries;
     }
 	//////////////////////////////////////////////////////////////////////
-	//config supplémentaire mode FSK
+	//config supplï¿½mentaire mode FSK
 	//////////////////////////////////////////////////////////////////////
     else
     {
@@ -165,7 +165,7 @@ void APP_SX1272_runTransmit()
   }
 }
 
-void APP_SX1272_runReceive()
+int, int APP_SX1272_runReceive()
 {
   char StatusRXMessage='0';
 
@@ -173,14 +173,14 @@ void APP_SX1272_runReceive()
   // Receive packets continuously
   if (ConfigOK == 1)
   {
-	    //affichage entête
+	    //affichage entï¿½te
 	    //statut (correct = 1 or bad = 0 or non received = 2)
 	  my_printf("\n \r\n");
 	  my_printf("Packet status ; Packet number ; Received Lg ; Received data ; RSSI packet (dBm) ; source address; PER (%); BER (%)\r\n");
 	  my_printf("\n \r\n");
 
     e = BSP_SX1272_receivePacketTimeout(WaitRxMax);
-    //paquet reçu, correct ou non
+    //paquet reï¿½u, correct ou non
     if (e == 0)
     {
       StatusRXMessage = '0';
@@ -215,6 +215,7 @@ void APP_SX1272_runReceive()
     my_printf(" ; ");
     for (uint8_t i =0; i < currentstate.packet_received.length-OFFSET_PAYLOADLENGTH; i++)
     {
+      a[i]=currentstate.packet_received.data[i];
       my_printf("%c",currentstate.packet_received.data[i]);
       my_printf(" ");
     }
@@ -235,4 +236,5 @@ void APP_SX1272_runReceive()
     }
   }
   BSP_DELAY_ms(1000);
+  return a,StatusRXMessage;
 }
