@@ -132,17 +132,17 @@ void APP_SX1272_setup()
   BSP_DELAY_ms(1000);
 }
 
-void APP_SX1272_runTransmit()
+void APP_SX1272_runTransmit(adrr,msg)
 {
-  uint8_t dest_address = TX_Addr;
+  uint8_t dest_address = addr;
 
   //////////////////////////////////////////////////////////////////////////////////
   // Transmit a packet continuously with a pause of "waitPeriod"
   if (ConfigOK == 1)
   {
 
-    LgMsg=strlen(Message);
-    e = BSP_SX1272_sendPacketTimeout(dest_address,Message,WaitTxMax);
+    LgMsg=strlen(msg);
+    e = BSP_SX1272_sendPacketTimeout(dest_address,msg,WaitTxMax);
 
     if(type_modulation)
     {
