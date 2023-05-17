@@ -1,7 +1,7 @@
 /*
  * SX1272.c
  *
- *  Created on: 24 août 2020
+ *  Created on: 24 aoï¿½t 2020
  *      Author: Arnaud
  */
 
