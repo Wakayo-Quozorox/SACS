@@ -2932,7 +2932,7 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-uint8_t BSP_SX1272_receivePacketTimeouACK(uint32_t wait)
+uint8_t BSP_SX1272_receivePacketTimeoutACK(uint32_t wait)
 {
 	uint8_t state = 2;
 	uint8_t state_f = 2;
@@ -2940,7 +2940,7 @@ uint8_t BSP_SX1272_receivePacketTimeouACK(uint32_t wait)
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
-		my_printf("Starting 'receivePacketTimeouACK'\r\n");
+		my_printf("Starting 'receivePacketTimeoutACK'\r\n");
 	#endif
 
 	// set RX mode
@@ -3676,8 +3676,6 @@ float BSP_SX1272_timeOnAir( uint16_t payloadlength )
 }
 
 
-
-
 /*
  Function: It sets a char array payload packet in a packet struct.
  Returns:  Integer that determines if there has been any error
@@ -3685,49 +3683,49 @@ float BSP_SX1272_timeOnAir( uint16_t payloadlength )
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-uint8_t BSP_SX1272_setPayload(char *payload)
-{
-	uint8_t state = 2;
-	uint8_t state_f = 2;
-	uint16_t length16;
-
-	#if (SX1272_debug_mode > 1)
-		my_printf("\r\n");
-		my_printf("Starting 'setPayload'\r\n");
-	#endif
-
-	state = 1;
-	length16 = (uint16_t)strlen(payload);
-	state = BSP_SX1272_truncPayload(length16);
-	if( state == 0 )
-	{
-		// fill data field until the end of the string
-		for(unsigned int i = 0; i < currentstate._payloadlength; i++)
-		{
-			currentstate.packet_sent.data[i] = payload[i];
-		}
-	}
-	else
-	{
-		state_f = state;
-	}
-
-	// In the case of FSK mode, the max payload is more restrictive
-	if( ( currentstate._modem == FSK ) && ( currentstate._payloadlength > MAX_PAYLOAD_FSK ) )
-	{
-		currentstate._payloadlength = MAX_PAYLOAD_FSK;
-		state = 1;
-		#if (SX1272_debug_mode > 1)
-			my_printf("In FSK, payload length must be less than 60 uint8_ts.\r\n");
-			my_printf("\r\n");
-		#endif
-	}
-
-	// Set length with the actual counter value
-	// Setting packet length in packet structure
-	state_f = BSP_SX1272_setPacketLength(currentstate._payloadlength + OFFSET_PAYLOADLENGTH);
-	return state_f;
-}
+//uint8_t BSP_SX1272_setPayload(char *payload)
+//{
+//	uint8_t state = 2;
+//	uint8_t state_f = 2;
+//	uint16_t length16;
+//
+//	#if (SX1272_debug_mode > 1)
+//		my_printf("\r\n");
+//		my_printf("Starting 'setPayload'\r\n");
+//	#endif
+//
+//	state = 1;
+//	length16 = (uint16_t)strlen(payload);
+//	state = BSP_SX1272_truncPayload(length16);
+//	if( state == 0 )
+//	{
+//		// fill data field until the end of the string
+//		for(unsigned int i = 0; i < currentstate._payloadlength; i++)
+//		{
+//			currentstate.packet_sent.data[i] = payload[i];
+//		}
+//	}
+//	else
+//	{
+//		state_f = state;
+//	}
+//
+//	// In the case of FSK mode, the max payload is more restrictive
+//	if( ( currentstate._modem == FSK ) && ( currentstate._payloadlength > MAX_PAYLOAD_FSK ) )
+//	{
+//		currentstate._payloadlength = MAX_PAYLOAD_FSK;
+//		state = 1;
+//		#if (SX1272_debug_mode > 1)
+//			my_printf("In FSK, payload length must be less than 60 uint8_ts.\r\n");
+//			my_printf("\r\n");
+//		#endif
+//	}
+//
+//	// Set length with the actual counter value
+//	// Setting packet length in packet structure
+//	state_f = BSP_SX1272_setPacketLength(currentstate._payloadlength + OFFSET_PAYLOADLENGTH);
+//	return state_f;
+//}
 
 /*
  Function: It sets an uint8_t array payload packet in a packet struct.
@@ -3736,7 +3734,7 @@ uint8_t BSP_SX1272_setPayload(char *payload)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-/*uint8_t BSP_SX1272_setPayload(uint8_t *payload)
+uint8_t BSP_SX1272_setPayload(uint8_t *payload)
 {
 	uint8_t state = 2;
 
@@ -3762,7 +3760,7 @@ uint8_t BSP_SX1272_setPayload(char *payload)
 	// set length with the actual counter value
     state = BSP_SX1272_setPacketLength(currentstate._payloadlength + OFFSET_PAYLOADLENGTH);	// Setting packet length in packet structure
 	return state;
-}*/
+}
 
 /*
  Function: It sets a packet struct in FIFO in order to send it.
@@ -3771,87 +3769,87 @@ uint8_t BSP_SX1272_setPayload(char *payload)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-uint8_t BSP_SX1272_setPacket(uint8_t dest, char *payload)
-{
-	int8_t state = 2;
-	uint8_t st0;
-
-	#if (SX1272_debug_mode > 1)
-		my_printf("\r\n");
-		my_printf("Starting 'setPacket'\r\n");
-	#endif
-
-	// Save the previous status
-	st0 = BSP_SX1272_Read(REG_OP_MODE);
-	// Initializing flags
-	BSP_SX1272_clearFlags();
-
-	// Updating incorrect value
-	currentstate._reception = CORRECT_PACKET;
-
-
-	if (currentstate._retries == 0)
-	{
-		// Updating these values only if it is the first try
-		// Setting destination in packet structure
-		state = BSP_SX1272_setDestination(dest);
-		if( state == 0 )
-		{
-			state = BSP_SX1272_setPayload(payload);
-		}
-	}
-	else
-	{
-		state = BSP_SX1272_setPacketLength(currentstate._payloadlength + OFFSET_PAYLOADLENGTH);
-		currentstate.packet_sent.retry = currentstate._retries;
-		#if (SX1272_debug_mode > 0)
-			my_printf("** Retrying to send last packet ");
-			my_printf("%d",currentstate._retries);
-			my_printf(" time **\r\n");
-		#endif
-	}
-
-	// Setting address pointer in FIFO data buffer
-	BSP_SX1272_Write(REG_FIFO_TX_BASE_ADDR, 0x00);
-	BSP_SX1272_Write(REG_FIFO_ADDR_PTR, 0x00);
-	if( state == 0 )
-	{
-		state = 1;
-		// Writing packet to send in FIFO
-		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.dst); 		// Writing the destination in FIFO
-		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.src);		// Writing the source in FIFO
-		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.packnum);	// Writing the packet number in FIFO
-		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.length); 	// Writing the packet length in FIFO
-		for( uint16_t i = 0; i < currentstate._payloadlength; i++)
-		{
-			BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.data[i]);  // Writing the payload in FIFO
-		}
-		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.retry);		// Writing the number retry in FIFO
-		state = 0;
-		#if (SX1272_debug_mode > 0)
-			my_printf("## Packet set and written in FIFO ##\r\n");
-			// Print the complete packet if debug_mode
-			my_printf("## Packet to send: ");
-			my_printf("%d",currentstate.packet_sent.dst);			 	// Printing destination
-			my_printf("|");
-			my_printf("%d",currentstate.packet_sent.src);			 	// Printing source
-			my_printf("|");
-			my_printf("%d",currentstate.packet_sent.packnum);			// Printing packet number
-			my_printf("|");
-			my_printf("%d",currentstate.packet_sent.length);			// Printing packet length
-			my_printf("|");
-			for( uint16_t i = 0; i < currentstate._payloadlength; i++)
-			{
-				my_printf("%d",currentstate.packet_sent.data[i]);		// Printing payload
-				my_printf("|");
-			}
-			my_printf("%d",currentstate.packet_sent.retry);			// Printing retry number
-			my_printf(" ##\r\n");
-		#endif
-	}
-	BSP_SX1272_Write(REG_OP_MODE, st0);	// Getting back to previous status
-	return state;
-}
+//uint8_t BSP_SX1272_setPacket(uint8_t dest, char *payload)
+//{
+//	int8_t state = 2;
+//	uint8_t st0;
+//
+//	#if (SX1272_debug_mode > 1)
+//		my_printf("\r\n");
+//		my_printf("Starting 'setPacket'\r\n");
+//	#endif
+//
+//	// Save the previous status
+//	st0 = BSP_SX1272_Read(REG_OP_MODE);
+//	// Initializing flags
+//	BSP_SX1272_clearFlags();
+//
+//	// Updating incorrect value
+//	currentstate._reception = CORRECT_PACKET;
+//
+//
+//	if (currentstate._retries == 0)
+//	{
+//		// Updating these values only if it is the first try
+//		// Setting destination in packet structure
+//		state = BSP_SX1272_setDestination(dest);
+//		if( state == 0 )
+//		{
+//			state = BSP_SX1272_setPayload(payload);
+//		}
+//	}
+//	else
+//	{
+//		state = BSP_SX1272_setPacketLength(currentstate._payloadlength + OFFSET_PAYLOADLENGTH);
+//		currentstate.packet_sent.retry = currentstate._retries;
+//		#if (SX1272_debug_mode > 0)
+//			my_printf("** Retrying to send last packet ");
+//			my_printf("%d",currentstate._retries);
+//			my_printf(" time **\r\n");
+//		#endif
+//	}
+//
+//	// Setting address pointer in FIFO data buffer
+//	BSP_SX1272_Write(REG_FIFO_TX_BASE_ADDR, 0x00);
+//	BSP_SX1272_Write(REG_FIFO_ADDR_PTR, 0x00);
+//	if( state == 0 )
+//	{
+//		state = 1;
+//		// Writing packet to send in FIFO
+//		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.dst); 		// Writing the destination in FIFO
+//		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.src);		// Writing the source in FIFO
+//		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.packnum);	// Writing the packet number in FIFO
+//		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.length); 	// Writing the packet length in FIFO
+//		for( uint16_t i = 0; i < currentstate._payloadlength; i++)
+//		{
+//			BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.data[i]);  // Writing the payload in FIFO
+//		}
+//		BSP_SX1272_Write(REG_FIFO, currentstate.packet_sent.retry);		// Writing the number retry in FIFO
+//		state = 0;
+//		#if (SX1272_debug_mode > 0)
+//			my_printf("## Packet set and written in FIFO ##\r\n");
+//			// Print the complete packet if debug_mode
+//			my_printf("## Packet to send: ");
+//			my_printf("%d",currentstate.packet_sent.dst);			 	// Printing destination
+//			my_printf("|");
+//			my_printf("%d",currentstate.packet_sent.src);			 	// Printing source
+//			my_printf("|");
+//			my_printf("%d",currentstate.packet_sent.packnum);			// Printing packet number
+//			my_printf("|");
+//			my_printf("%d",currentstate.packet_sent.length);			// Printing packet length
+//			my_printf("|");
+//			for( uint16_t i = 0; i < currentstate._payloadlength; i++)
+//			{
+//				my_printf("%d",currentstate.packet_sent.data[i]);		// Printing payload
+//				my_printf("|");
+//			}
+//			my_printf("%d",currentstate.packet_sent.retry);			// Printing retry number
+//			my_printf(" ##\r\n");
+//		#endif
+//	}
+//	BSP_SX1272_Write(REG_OP_MODE, st0);	// Getting back to previous status
+//	return state;
+//}
 
 /*
  Function: It sets a packet struct in FIFO in order to sent it.
@@ -3860,7 +3858,7 @@ uint8_t BSP_SX1272_setPacket(uint8_t dest, char *payload)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-/*uint8_t BSP_SX1272_setPacket(uint8_t dest, uint8_t *payload)
+uint8_t BSP_SX1272_setPacket(uint8_t dest, uint8_t *payload)
 {
 	int8_t state = 2;
 	uint8_t st0;
@@ -3885,10 +3883,10 @@ uint8_t BSP_SX1272_setPacket(uint8_t dest, char *payload)
 	currentstate._reception = CORRECT_PACKET;	// Updating incorrect value to send a packet (old or new)
 	if(currentstate._retries == 0)
 	{ // Sending new packet
-		state = setDestination(dest);	// Setting destination in packet structure
+		state = BSP_SX1272_setDestination(dest);	// Setting destination in packet structure
 		if( state == 0 )
 		{
-			state = setPayload(payload);
+			state = BSP_SX1272_setPayload(payload);
 		}
 	}
 	else
@@ -3940,7 +3938,7 @@ uint8_t BSP_SX1272_setPacket(uint8_t dest, char *payload)
 	}
 	BSP_SX1272_Write(REG_OP_MODE, st0);	// Getting back to previous status
 	return state;
-}*/
+}
 
 /*
  Function: Configures the module to transmit information.
@@ -4054,10 +4052,10 @@ uint8_t BSP_SX1272_sendWithTimeout(uint32_t wait)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-uint8_t BSP_SX1272_sendPacketMAXTimeout(uint8_t dest, char *payload)
-{
-	return BSP_SX1272_sendPacketTimeout(dest, payload, MAX_TIMEOUT);
-}
+//uint8_t BSP_SX1272_sendPacketMAXTimeout(uint8_t dest, char *payload)
+//{
+//	return BSP_SX1272_sendPacketTimeout(dest, payload, MAX_TIMEOUT);
+//}
 
 /*
  Function: Configures the module to transmit information.
@@ -4066,36 +4064,11 @@ uint8_t BSP_SX1272_sendPacketMAXTimeout(uint8_t dest, char *payload)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-/*uint8_t BSP_SX1272_sendPacketMAXTimeout(	uint8_t dest,
+uint8_t BSP_SX1272_sendPacketMAXTimeout(	uint8_t dest,
 											uint8_t *payload,
 											uint16_t length16)
 {
 	return BSP_SX1272_sendPacketTimeout(dest, payload, length16, MAX_TIMEOUT);
-}*/
-
-/*
- Function: Configures the module to transmit information.
- Returns: Integer that determines if there has been any error
-   state = 2  --> The command has not been executed
-   state = 1  --> There has been an error while executing the command
-   state = 0  --> The command has been executed with no errors
-*/
-uint8_t BSP_SX1272_sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)
-{
-	uint8_t state = 2;
-
-	#if (SX1272_debug_mode > 1)
-		my_printf("\r\n");
-		my_printf("Starting 'sendPacketTimeout'\r\n");
-		my_printf("Passe dans sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)\r\n");
-	#endif
-
-	state = BSP_SX1272_setPacket(dest, payload);	// Setting a packet with 'dest' destination
-	if (state == 0)								// and writing it in FIFO.
-	{
-		state = BSP_SX1272_sendWithTimeout(wait);	// Sending the packet
-	}
-	return state;
 }
 
 /*
@@ -4105,7 +4078,32 @@ uint8_t BSP_SX1272_sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-/*uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
+//uint8_t BSP_SX1272_sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)
+//{
+//	uint8_t state = 2;
+//
+//	#if (SX1272_debug_mode > 1)
+//		my_printf("\r\n");
+//		my_printf("Starting 'sendPacketTimeout'\r\n");
+//		my_printf("Passe dans sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)\r\n");
+//	#endif
+//
+//	state = BSP_SX1272_setPacket(dest, payload);	// Setting a packet with 'dest' destination
+//	if (state == 0)								// and writing it in FIFO.
+//	{
+//		state = BSP_SX1272_sendWithTimeout(wait);	// Sending the packet
+//	}
+//	return state;
+//}
+
+/*
+ Function: Configures the module to transmit information.
+ Returns: Integer that determines if there has been any error
+   state = 2  --> The command has not been executed
+   state = 1  --> There has been an error while executing the command
+   state = 0  --> The command has been executed with no errors
+*/
+uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
 										uint8_t *payload,
 										uint16_t length16,
 										uint32_t wait)
@@ -4119,10 +4117,10 @@ uint8_t BSP_SX1272_sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)
 		my_printf("Passe dans sendPacketTimeout(uint8_t dest, uint8_t *payload, uint16_t length16, uint32_t wait)\r\n");
 	#endif
 
-	state = truncPayload(length16);
+	state = BSP_SX1272_truncPayload(length16);
 	if( state == 0 )
 	{
-		state_f = setPacket(dest, payload);	// Setting a packet with 'dest' destination
+		state_f = BSP_SX1272_setPacket(dest, payload);	// Setting a packet with 'dest' destination
 	}
 	else
 	{
@@ -4130,10 +4128,10 @@ uint8_t BSP_SX1272_sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)
 	}
 	if( state_f == 0 )								// and writing it in FIFO.
 	{
-		state_f = sendWithTimeout(wait);	// Sending the packet
+		state_f = BSP_SX1272_sendWithTimeout(wait);	// Sending the packet
 	}
 	return state_f;
-}*/
+}
 
 /*
  Function: Configures the module to transmit information.
@@ -4142,10 +4140,10 @@ uint8_t BSP_SX1272_sendPacketTimeout(uint8_t dest, char *payload, uint32_t wait)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-uint8_t BSP_SX1272_sendPacketMAXTimeoutACK(uint8_t dest, char *payload)
-{
-	return BSP_SX1272_sendPacketTimeoutACK(dest, payload, MAX_TIMEOUT);
-}
+//uint8_t BSP_SX1272_sendPacketMAXTimeoutACK(uint8_t dest, char *payload)
+//{
+//	return BSP_SX1272_sendPacketTimeoutACK(dest, payload, MAX_TIMEOUT);
+//}
 
 /*
  Function: Configures the module to transmit information and BSP_SX1272_receive an currentstate.ACK.
@@ -4154,12 +4152,12 @@ uint8_t BSP_SX1272_sendPacketMAXTimeoutACK(uint8_t dest, char *payload)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-/*uint8_t BSP_SX1272_sendPacketMAXTimeoutACK(uint8_t dest,
+uint8_t BSP_SX1272_sendPacketMAXTimeoutACK(uint8_t dest,
 											uint8_t *payload,
 											uint16_t length16)
 {
-	return sendPacketTimeouACK(dest, payload, length16, MAX_TIMEOUT);
-}*/
+	return BSP_SX1272_sendPacketTimeoutACK(dest, payload, length16, MAX_TIMEOUT);
+}
 
 /*
  Function: Configures the module to transmit information and BSP_SX1272_receive an currentstate.ACK.
@@ -4176,8 +4174,63 @@ uint8_t BSP_SX1272_sendPacketMAXTimeoutACK(uint8_t dest, char *payload)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
+//uint8_t BSP_SX1272_sendPacketTimeoutACK(	uint8_t dest,
+//											char *payload,
+//											uint32_t wait)
+//{
+//	uint8_t state = 2;
+//	uint8_t state_f = 2;
+//
+//	#if (SX1272_debug_mode > 1)
+//		my_printf("\r\n");
+//		my_printf("Starting 'sendPacketTimeouACK'\r\n");
+//	#endif
+//
+//	state = BSP_SX1272_sendPacketTimeout(dest, payload, wait);	// Sending packet to 'dest' destination
+//	if( state == 0 )
+//	{
+//		state = BSP_SX1272_receive();	// Setting Rx mode to wait an currentstate.ACK
+//	}
+//	else
+//	{
+//		state_f = 1;
+//	}
+//	if( state == 0 )
+//	{
+//		if( BSP_SX1272_availableData(MAX_TIMEOUT) )
+//		{
+//			state_f = BSP_SX1272_getACK(MAX_TIMEOUT);	// Getting currentstate.ACK
+//		}
+//		else
+//		{
+//			state_f = 9;
+//		}
+//	}
+//	else
+//	{
+//		state_f = 1;
+//	}
+//
+//	return state_f;
+//}
+
+/*
+ Function: Configures the module to transmit information and BSP_SX1272_receive an currentstate.ACK.
+ Returns: Integer that determines if there has been any error
+   state = 9  --> The currentstate.ACK lost (no data available)
+   state = 8  --> The currentstate.ACK lost
+   state = 7  --> The currentstate.ACK destination incorrectly received
+   state = 6  --> The currentstate.ACK source incorrectly received
+   state = 5  --> The currentstate.ACK number incorrectly received
+   state = 4  --> The currentstate.ACK length incorrectly received
+   state = 3  --> N-currentstate.ACK received
+   state = 2  --> The command has not been executed
+   state = 1  --> There has been an error while executing the command
+   state = 0  --> The command has been executed with no errors
+*/
 uint8_t BSP_SX1272_sendPacketTimeoutACK(	uint8_t dest,
-											char *payload,
+											uint8_t *payload,
+											uint16_t length16,
 											uint32_t wait)
 {
 	uint8_t state = 2;
@@ -4185,10 +4238,10 @@ uint8_t BSP_SX1272_sendPacketTimeoutACK(	uint8_t dest,
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
-		my_printf("Starting 'sendPacketTimeouACK'\r\n");
+		my_printf("Starting 'sendPacketTimeoutACK'\r\n");
 	#endif
 
-	state = BSP_SX1272_sendPacketTimeout(dest, payload, wait);	// Sending packet to 'dest' destination
+	state = BSP_SX1272_sendPacketTimeout(dest, payload, length16, wait);	// Sending packet to 'dest' destination
 	if( state == 0 )
 	{
 		state = BSP_SX1272_receive();	// Setting Rx mode to wait an currentstate.ACK
@@ -4215,61 +4268,6 @@ uint8_t BSP_SX1272_sendPacketTimeoutACK(	uint8_t dest,
 
 	return state_f;
 }
-
-/*
- Function: Configures the module to transmit information and BSP_SX1272_receive an currentstate.ACK.
- Returns: Integer that determines if there has been any error
-   state = 9  --> The currentstate.ACK lost (no data available)
-   state = 8  --> The currentstate.ACK lost
-   state = 7  --> The currentstate.ACK destination incorrectly received
-   state = 6  --> The currentstate.ACK source incorrectly received
-   state = 5  --> The currentstate.ACK number incorrectly received
-   state = 4  --> The currentstate.ACK length incorrectly received
-   state = 3  --> N-currentstate.ACK received
-   state = 2  --> The command has not been executed
-   state = 1  --> There has been an error while executing the command
-   state = 0  --> The command has been executed with no errors
-*/
-/*uint8_t BSP_SX1272_sendPacketTimeoutACK(	uint8_t dest,
-											uint8_t *payload,
-											uint16_t length16,
-											uint32_t wait)
-{
-	uint8_t state = 2;
-	uint8_t state_f = 2;
-
-	#if (SX1272_debug_mode > 1)
-		my_printf("\r\n");
-		my_printf("Starting 'sendPacketTimeouACK'\r\n");
-	#endif
-
-	state = sendPacketTimeout(dest, payload, length16, wait);	// Sending packet to 'dest' destination
-	if( state == 0 )
-	{
-		state = BSP_SX1272_receive();	// Setting Rx mode to wait an currentstate.ACK
-	}
-	else
-	{
-		state_f = 1;
-	}
-	if( state == 0 )
-	{
-		if( BSP_SX1272_availableData(MAX_TIMEOUT) )
-		{
-			state_f = geACK();	// Getting currentstate.ACK
-		}
-		else
-		{
-			state_f = 9;
-		}
-	}
-	else
-	{
-		state_f = 1;
-	}
-
-	return state_f;
-}*/
 
 /*
  Function: It gets and stores an currentstate.ACK if it is received, before ending 'wait' time.
@@ -4441,11 +4439,11 @@ uint8_t BSP_SX1272_getACK(uint32_t wait)
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-uint8_t BSP_SX1272_sendPacketMAXTimeoutACKRetries(	uint8_t dest,
-													char  *payload)
-{
-	return BSP_SX1272_sendPacketTimeoutACKRetries(dest, payload, MAX_TIMEOUT);
-}
+//uint8_t BSP_SX1272_sendPacketMAXTimeoutACKRetries(	uint8_t dest,
+//													char  *payload)
+//{
+//	return BSP_SX1272_sendPacketTimeoutACKRetries(dest, payload, MAX_TIMEOUT);
+//}
 
 /*
  Function: Configures the module to transmit information with retries in case of error.
@@ -4454,14 +4452,51 @@ uint8_t BSP_SX1272_sendPacketMAXTimeoutACKRetries(	uint8_t dest,
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
-/*uint8_t BSP_SX1272_sendPacketMAXTimeouACKRetries(	uint8_t dest,
+uint8_t BSP_SX1272_sendPacketMAXTimeoutACKRetries(	uint8_t dest,
 													uint8_t *payload,
 													uint16_t length16)
 {
-	return sendPacketTimeouACKRetries(dest, payload, length16, MAX_TIMEOUT);
+	return BSP_SX1272_sendPacketTimeoutACKRetries(dest, payload, length16, MAX_TIMEOUT);
+}
+
+
+
+/*
+ Function: Configures the module to transmit information with retries in case of error.
+ Returns: Integer that determines if there has been any error
+   state = 9  --> The currentstate.ACK lost (no data available)
+   state = 8  --> The currentstate.ACK lost
+   state = 7  --> The currentstate.ACK destination incorrectly received
+   state = 6  --> The currentstate.ACK source incorrectly received
+   state = 5  --> The currentstate.ACK number incorrectly received
+   state = 4  --> The currentstate.ACK length incorrectly received
+   state = 3  --> N-currentstate.ACK received
+   state = 2  --> The command has not been executed
+   state = 1  --> There has been an error while executing the command
+   state = 0  --> The command has been executed with no errors
+*/
+/*uint8_t BSP_SX1272_sendPacketTimeoutACKRetries(uint8_t dest,
+												char *payload,
+												uint32_t wait)
+{
+	uint8_t state = 2;
+
+	#if (SX1272_debug_mode > 1)
+		my_printf("\r\n");
+		my_printf("Starting 'sendPacketTimeoutACKRetries'\r\n");
+	#endif
+
+	// Sending packet to 'dest' destination and waiting an currentstate.ACK response.
+	state = 1;
+	while( (state != 0) && (currentstate._retries <= currentstate._maxRetries) )
+	{
+		state = BSP_SX1272_sendPacketTimeoutACK(dest, payload, wait);
+		currentstate._retries++;
+	}
+	currentstate._retries = 0;
+
+	return state;
 }*/
-
-
 
 /*
  Function: Configures the module to transmit information with retries in case of error.
@@ -4478,43 +4513,6 @@ uint8_t BSP_SX1272_sendPacketMAXTimeoutACKRetries(	uint8_t dest,
    state = 0  --> The command has been executed with no errors
 */
 uint8_t BSP_SX1272_sendPacketTimeoutACKRetries(uint8_t dest,
-												char *payload,
-												uint32_t wait)
-{
-	uint8_t state = 2;
-
-	#if (SX1272_debug_mode > 1)
-		my_printf("\r\n");
-		my_printf("Starting 'sendPacketTimeouACKRetries'\r\n");
-	#endif
-
-	// Sending packet to 'dest' destination and waiting an currentstate.ACK response.
-	state = 1;
-	while( (state != 0) && (currentstate._retries <= currentstate._maxRetries) )
-	{
-		state = BSP_SX1272_sendPacketTimeoutACK(dest, payload, wait);
-		currentstate._retries++;
-	}
-	currentstate._retries = 0;
-
-	return state;
-}
-
-/*
- Function: Configures the module to transmit information with retries in case of error.
- Returns: Integer that determines if there has been any error
-   state = 9  --> The currentstate.ACK lost (no data available)
-   state = 8  --> The currentstate.ACK lost
-   state = 7  --> The currentstate.ACK destination incorrectly received
-   state = 6  --> The currentstate.ACK source incorrectly received
-   state = 5  --> The currentstate.ACK number incorrectly received
-   state = 4  --> The currentstate.ACK length incorrectly received
-   state = 3  --> N-currentstate.ACK received
-   state = 2  --> The command has not been executed
-   state = 1  --> There has been an error while executing the command
-   state = 0  --> The command has been executed with no errors
-*/
-/*uint8_t BSP_SX1272_sendPacketTimeouACKRetries(uint8_t dest,
 												uint8_t *payload,
 												uint16_t length16,
 												uint32_t wait)
@@ -4523,20 +4521,20 @@ uint8_t BSP_SX1272_sendPacketTimeoutACKRetries(uint8_t dest,
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
-		my_printf("Starting 'sendPacketTimeouACKRetries'\r\n");
+		my_printf("Starting 'sendPacketTimeoutACKRetries'\r\n");
 	#endif
 
 	// Sending packet to 'dest' destination and waiting an currentstate.ACK response.
 	state = 1;
 	while( (state != 0) && (currentstate._retries <= currentstate._maxRetries) )
 	{
-		state = sendPacketTimeouACK(dest, payload, length16, wait);
+		state = BSP_SX1272_sendPacketTimeoutACK(dest, payload, length16, wait);
 		currentstate._retries++;
 	}
 	currentstate._retries = 0;
 
 	return state;
-}*/
+}
 
 /*
  Function: It gets the temperature from the measurement block module.

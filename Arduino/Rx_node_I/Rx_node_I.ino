@@ -32,13 +32,13 @@
 
 // SACS constants
 #define preambSACS 2 // Number of bytes before data (header + sid + ack + size)
-#define endingSACS 0 // Number of bytes after data (ending pattern)
+#define endingSACS 1 // Number of bytes after data (ending pattern)
 
 ///////////////////////////////////////////////////////////////
 // Déclaration variables globales
 ///////////////////////////////////////////////////////////////
-char LgMsg = 0;
-char Message[] = "Salut Francis, comment vas-tu ?";
+uint16_t  LgMsg = 0;
+uint8_t Message[] = {0b10101010,0b00010001,0b01100110,0b01110010,0b01100001,0b01101101,0b01100010,0b01101111,0b01101001,0b01110011,0b01100101,0b00000000};
 uint8_t rx_address = RX_Addr;
 int type_modulation=TypeModulation;
 uint16_t RegBitRate = BitRate;
@@ -164,7 +164,7 @@ void setup() {
     //statut (correct = 1 or bad = 0 or non received = 2) 
     Serial.println(F("\n "));
     Serial.println(F("Module ready for reception ! "));
-    Serial.println(F("Packet status ; Packet number ; Received Lg ; Received data ; RSSI packet (dBm) ; source address; PER (%); BER (%)"));
+    Serial.println(F("Packet status ; Packet number ; Received Lg ; TRAME ; DATA ; RSSI packet (dBm) ; source address; PER (%); BER (%)"));
     Serial.println(F("\n "));
   } 
 }
@@ -202,7 +202,7 @@ void loop()
        // Check if the received packet is correct
        // The length and the content of the packet is checked
        // if it is valid, the cpok counter is incremented 
-       LgMsg=strlen(Message);
+       LgMsg=sizeof(Message) / sizeof(Message[0]);
        if(sx1272.packet_received.length>=LgMsg)//check the length
        {
         if(memcmp(Message,sx1272.packet_received.data,LgMsg)==0)//check the content
@@ -234,10 +234,17 @@ void loop()
     Serial.print(F(" ; "));
     Serial.print(sx1272.packet_received.length,DEC);
     Serial.print(F(" ; "));
+    for (uint8_t i = 0; i < sx1272.packet_received.length-OFFSET_PAYLOADLENGTH; i++)
+    {
+      // Serial.print(sx1272.packet_received.data[i],HEX);
+      Serial.print(sx1272.packet_received.data[i],BIN);
+      Serial.print(" ");
+    }
+    Serial.print(F(" ; "));
     for (uint8_t i = preambSACS; i < sx1272.packet_received.length-OFFSET_PAYLOADLENGTH-endingSACS; i++)
     {
+      // Serial.print(sx1272.packet_received.data[i],HEX);
       Serial.print(char(sx1272.packet_received.data[i]));
-      Serial.print(" ");
     }
     ///////////////////////////////////////////////////////////////////////////////////
     // Plot RSSI
