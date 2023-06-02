@@ -31,8 +31,8 @@
 #define WaitRxMax 10000 //en ms
 
 // SACS constants
-#define preambSACS 2 // Number of bytes before data (header + sid + ack + size)
-#define endingSACS 1 // Number of bytes after data (ending pattern)
+#define PREAMBSACS 2 // Number of bytes before data (header + sid + ack + size)
+#define ENDINGSACS 1 // Number of bytes after data (ending pattern)
 
 ///////////////////////////////////////////////////////////////
 // Déclaration variables globales
@@ -241,7 +241,7 @@ void loop()
       Serial.print(" ");
     }
     Serial.print(F(" ; "));
-    for (uint8_t i = preambSACS; i < sx1272.packet_received.length-OFFSET_PAYLOADLENGTH-endingSACS; i++)
+    for (uint8_t i = PREAMBSACS; i < sx1272.packet_received.length-OFFSET_PAYLOADLENGTH-ENDINGSACS; i++)
     {
       // Serial.print(sx1272.packet_received.data[i],HEX);
       Serial.print(char(sx1272.packet_received.data[i]));
