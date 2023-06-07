@@ -47,10 +47,16 @@ int main()
 	{
 		curtime=BSP_millis();
 
-		if((curtime%1000)==0 && error!=0)//send every 1000ms
+		if((curtime%1000)==0 && error==0)//send every 1000ms
 		{
 			error=APP_SACS_send(sId,ack,sizeData,data);
 			i++;
+		}else if(error!=0)
+		{
+			my_printf("Error\r\n");
+		} else
+		{
+			//Default: nothing happens
 		}
 	}
 }
