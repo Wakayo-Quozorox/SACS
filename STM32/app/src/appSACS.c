@@ -6,6 +6,7 @@
  */
 
 #include "main.h"
+#include "appSACS.h"
 #include "appSX1272.h"
 #include "SX1272.h"
 #include "comSX1272.h"

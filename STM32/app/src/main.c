@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -11,6 +11,7 @@
 #include "comSX1272.h"
 #include "SX1272.h"
 #include "appSX1272.h"
+#include "appSACS.h"
 
 static void SystemClock_Config();
 
@@ -18,6 +19,12 @@ int main()
 {
 	uint32_t curtime=0;
 	uint32_t i=0;
+
+	uint8_t data[] = {0b01100110,0b01110010,0b01100001,0b01101101,0b01100010,0b01101111,0b01101001,0b01110011,0b01100101}; //framboise
+	uint8_t sizeData = sizeof(data)/sizeof(data[0]);
+	uint8_t sId = 0;
+	uint8_t ack = 1;
+	uint8_t error = 0;
 
 	// Initialize System clock to 48MHz from external clock
 	SystemClock_Config();
@@ -40,10 +47,9 @@ int main()
 	{
 		curtime=BSP_millis();
 
-		if((curtime%1000)==0)//send every 1000ms
+		if((curtime%1000)==0 && error!=0)//send every 1000ms
 		{
-			APP_SX1272_runTransmit();
-			//APP_SX1272_runReceive();
+			error=APP_SACS_send(sId,ack,sizeData,data);
 			i++;
 		}
 	}
