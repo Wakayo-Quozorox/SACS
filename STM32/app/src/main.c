@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -11,8 +11,14 @@
 #include "comSX1272.h"
 #include "SX1272.h"
 #include "appSX1272.h"
+#include "appSACS.h"
 
 static void SystemClock_Config();
+
+// DÃ©fini juste pour tester le calcul et le check du CRC :
+static uint8_t payload[] = {0b10101010,0b00010001,0b00000000,0b00000000,0b00000000};
+static uint8_t sizePayload = 5;
+static uint8_t state = 0;
 
 int main()
 {
@@ -38,6 +44,9 @@ int main()
 
 	while(1)
 	{
+		APP_SACS_setCRC(payload, sizePayload);
+		state = APP_SACS_checkCRC(payload, sizePayload);
+
 		curtime=BSP_millis();
 
 		if((curtime%1000)==0)//send every 1000ms
