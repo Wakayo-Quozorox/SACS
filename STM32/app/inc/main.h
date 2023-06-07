@@ -1,7 +1,7 @@
 /*
  * main.h
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -11,6 +11,8 @@
 /*
  * printf() and sprintf() from printf-stdarg.c
  */
+
+#define DEBUG 1
 
 int my_printf	(const char *format, ...);
 int my_sprintf	(char *out, const char *format, ...);
