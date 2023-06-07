@@ -10,6 +10,15 @@
 
 #include "SX1272.h"
 
-uint8_t APP_SACS_send(uint8_t sid,uint8_t ack, uint8_t	size_data, uint8_t* data);
+typedef struct frameSACS_s {
+	uint8_t sid;       // SLAVE ID
+	uint8_t ack;       // ACKNOWLEDGEMENT
+	uint8_t size_data; // SIZE DATA
+	uint8_t data[16];  // DATA
+	uint8_t crc;	   // CRC
+} frameSACS_s;
+
+uint8_t APP_SACS_send(frameSACS_s frame);
+uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut);
 
 #endif /* APP_INC_APPSACS_H_ */

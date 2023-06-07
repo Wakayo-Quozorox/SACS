@@ -19,11 +19,19 @@ int main()
 {
 	uint32_t curtime=0;
 	uint32_t i=0;
-
-	uint8_t data[] = {0b01100110,0b01110010,0b01100001,0b01101101,0b01100010,0b01101111,0b01101001,0b01110011,0b01100101}; //framboise
-	uint8_t sizeData = sizeof(data)/sizeof(data[0]);
-	uint8_t sId = 0;
-	uint8_t ack = 1;
+	frameSACS_s frame;
+	frame.data[0]=0b01100110; //f
+	frame.data[1]=0b01110010; //r
+	frame.data[2]=0b01100001; //a
+	frame.data[3]=0b01101101; //m
+	frame.data[4]=0b01100010; //b
+	frame.data[5]=0b01101111; //o
+	frame.data[6]=0b01101001; //i
+	frame.data[7]=0b01110011; //s
+	frame.data[8]=0b01100101; //e
+	frame.size_data = 9;
+	frame.sid = 0;
+	frame.ack = 1;
 	uint8_t error = 0;
 
 	// Initialize System clock to 48MHz from external clock
@@ -49,7 +57,7 @@ int main()
 
 		if((curtime%1000)==0 && error==0)//send every 1000ms
 		{
-			error=APP_SACS_send(sId,ack,sizeData,data);
+			error=APP_SACS_send(frame);
 			i++;
 		}else if(error!=0)
 		{
