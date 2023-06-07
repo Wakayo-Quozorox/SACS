@@ -12,13 +12,14 @@
 
 int controllerMain(void) {
 	uint32_t curtime = 0;
-	uint8_t bufferData[MAX_DATA_SIZE];
+	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, LED_TOGGLE, 0};
+	frameSACS_s receivedPacket;
 	uint8_t receiveStatus;
 
 	while(1)
 	{
 		/* Send LED_TOGGLE packet */
-		if(APP_SACS_send(SID1, LED_PACKET_SIZE, LED_TOGGLE) != SEND_OK)
+		if(APP_SACS_send(packetLed) != SEND_OK)
 		{
 			return SEND_ERROR;
 		} else {
@@ -28,7 +29,7 @@ int controllerMain(void) {
 		}
 
 		/* Receive data from subordonate */
-		receiveStatus = APP_SACS_receive(SID1, bufferData, RECEIVE_TIMEOUT) != RECEIVE_OK)
+		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT) != RECEIVE_OK);
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
@@ -49,7 +50,7 @@ int controllerMain(void) {
 			break;
 		}
 
-		processData(bufferData);
+		processData(receivedPacket.data);
 
 		/* Wait for a second */
 		BSP_delay_ms(1000);

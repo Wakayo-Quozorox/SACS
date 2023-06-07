@@ -17,8 +17,12 @@
 
 /* temporaire, à intégrer dans appSACS.h */
 #define MAX_DATA_SIZE    16
-#define SEND_ERROR	1
-#define SEND_OK		0
+#define SEND_ERROR	    1
+#define SEND_OK		    0
+#define RECEIVE_ERROR	1
+#define RECEIVE_OK	    0   
+#define ACK             1
+#define NACK            0
 
 int controllerMain(void);
 int processData(uint8_t *data);
