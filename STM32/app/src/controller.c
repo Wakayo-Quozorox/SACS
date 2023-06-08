@@ -57,10 +57,8 @@ int controllerMain(void) {
 		processDataController(&receivedPacket);
 
 		/* Wait for a second and blink LED */
-		BSP_delay_ms(800);
-		BSP_LED_On();
-		BSP_delay_ms(200);
-		BSP_LED_Off();
+		BSP_delay_ms(600);
+		shortBlink(1);
 		
 	}
 

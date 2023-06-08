@@ -10,13 +10,13 @@
 
 #include "appSACS.h"
 
+/* temporaire, à intégrer dans appSACS.h */
 #define SID1		0x03
 #define LED_ON		0x11
 #define LED_OFF		0x10
 #define LED_TOGGLE	0x12
 
-/* temporaire, à intégrer dans appSACS.h */
-#define MAX_DATA_SIZE    16
+#define MAX_DATA_SIZE   16
 #define SEND_ERROR	    1
 #define SEND_OK		    0
 #define RECEIVE_ERROR	1
@@ -30,6 +30,7 @@
  * @return int 1 if error, should never return otherwise
  */
 int controllerMain(void);
+
 /**
  * @brief Process the data received from the subordinate
  * 
@@ -40,7 +41,7 @@ int processDataController(frameSASCS_s *toProcess);
 
 /**
  * @brief Blink the LED a certain number of times
- * with a period of 200ms
+ * with a period of 400ms
  * 
  * @param nbBlink Number of times the LED should blink
  */
@@ -48,7 +49,7 @@ void shortBlink(uint8_t nbBlink);
 
 /**
  * @brief Blink the LED a certain number of times
- * with a period of 1s
+ * with a period of 2s
  * 
  * @param nbBlink Number of times the LED should blink
  */
