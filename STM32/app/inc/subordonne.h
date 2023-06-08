@@ -6,7 +6,9 @@
  */
 #ifndef APP_INC_SUBORDONNE_H_
 #define APP_INC_SUBORDONNE_H_
+
 #include "appSACS.h"
+
 #define SID1		0x03
 #define LED_ON		0x11
 #define LED_OFF		0x10
@@ -22,5 +24,5 @@
 #define NACK            0
 
 int subordonneMain(void);
-int processDatasub(uint8_t *data);
+
 #endif /* APP_INC_CONTROLLER_H_ */
