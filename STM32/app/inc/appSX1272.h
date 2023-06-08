@@ -40,6 +40,6 @@
 
 void APP_SX1272_setup();
 void APP_SX1272_runTransmit();
-int, int APP_SX1272_runReceive();
+void APP_SX1272_runReceive();
 
 #endif /* APP_INC_APPSX1272_H_ */

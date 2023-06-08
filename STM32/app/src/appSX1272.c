@@ -165,7 +165,7 @@ void APP_SX1272_runTransmit(adrr,msg)
   }
 }
 
-int, int APP_SX1272_runReceive()
+void APP_SX1272_runReceive()
 {
   char StatusRXMessage='0';
 
