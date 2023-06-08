@@ -20,7 +20,7 @@
 typedef struct frameSACS_s {
 	uint8_t sid;                  // SLAVE ID
 	uint8_t ack;                  // ACKNOWLEDGEMENT
-	uint8_t size_data;            // SIZE DATA
+	uint8_t sizeData;            // SIZE DATA
 	uint8_t data[MAX_SIZE_DATA];  // DATA
 	uint16_t crc;	              // CRC
 } frameSACS_s;
