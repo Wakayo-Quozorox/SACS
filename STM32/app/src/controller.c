@@ -82,18 +82,30 @@ int processDataController(frameSACS_s *toProcess) {
 	 */
 	if(toProcess->data[0] == LED_TOGGLE)
 	{
-		BSP_LED_On();
-		BSP_delay_ms(200);
-		BSP_LED_Off();
-		BSP_delay_ms(200);
-		BSP_LED_On();
-		BSP_delay_ms(200);
-		BSP_LED_Off();
+		shortBlink(3);
 		return EXIT_SUCCESS;
 	} else {
+		longBlink(1);
+		return EXIT_FAILURE;
+	}
+}
+
+void shortBlink(uint8_t nbBlink) {
+	for (uint8_t i = 0; i < nbBlink; ++i)
+	{
+		BSP_LED_On();
+		BSP_delay_ms(200);
+		BSP_LED_Off();
+		BSP_delay_ms(200);
+	}
+}
+
+void longBlink(uint8_t nbBlink) {
+	for (uint8_t i = 0; i < nbBlink; ++i)
+	{
 		BSP_LED_On();
 		BSP_delay_ms(1000);
 		BSP_LED_Off();
-		return EXIT_FAILURE;
+		BSP_delay_ms(1000);
 	}
 }

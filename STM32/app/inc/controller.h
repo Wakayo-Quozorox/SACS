@@ -38,4 +38,20 @@ int controllerMain(void);
  */
 int processDataController(frameSASCS_s *toProcess);
 
+/**
+ * @brief Blink the LED a certain number of times
+ * with a period of 200ms
+ * 
+ * @param nbBlink Number of times the LED should blink
+ */
+void shortBlink(uint8_t nbBlink);
+
+/**
+ * @brief Blink the LED a certain number of times
+ * with a period of 1s
+ * 
+ * @param nbBlink Number of times the LED should blink
+ */
+void longBlink(uint8_t nbBlink);
+
 #endif /* APP_INC_CONTROLLER_H_ */
