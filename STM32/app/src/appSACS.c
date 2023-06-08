@@ -17,7 +17,7 @@
 ///////////////////////////////////////////////////////////////
 // Declaration variables globales
 ///////////////////////////////////////////////////////////////
-
+extern	SX1272status currentstate;
 
 
 
@@ -56,7 +56,6 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 ///////////////////////////////////////////////////////////////
 uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 {
-	SX1272status currentstate;
 	uint8_t error = 0;
 	uint8_t size_payload = 0;
 	uint8_t payload[MAX_SIZE_PAYLOAD];
