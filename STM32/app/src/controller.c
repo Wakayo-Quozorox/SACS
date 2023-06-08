@@ -18,6 +18,8 @@ int controllerMain(void) {
 	frameSACS_s receivedPacket;
 	uint8_t receiveStatus;
 
+	BSP_LED_Init();
+
 	while(1)
 	{
 		/* Send LED_TOGGLE packet */
@@ -30,7 +32,7 @@ int controllerMain(void) {
 			#endif
 		}
 
-		/* Receive data from subordonate */
+		/* Receive data from subordinate */
 		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{
@@ -52,7 +54,7 @@ int controllerMain(void) {
 			break;
 		}
 
-		processData(receivedPacket.data);
+		processDataController(&receivedPacket);
 
 		/* Wait for a second and blink LED */
 		BSP_delay_ms(800);
@@ -66,13 +68,32 @@ int controllerMain(void) {
 	return EXIT_FAILURE;
 }
 
-int processData(uint8_t *data) {
-	/* Insert code here */
+int processDataController(frameSACS_s *toProcess) {
 	#if DEBUG
 		my_printf("Data received:\r\n");
 		for (int i = 0; i < MAX_DATA_SIZE; ++i)
 		{
-			my_printf("%d\r\n", data[i]);
+			my_printf("%d\r\n", toProcess->data[i]);
 		}
 	#endif
+
+	/* Cette portion n'est valide que pour l'exemple de la LED simple
+	 * Il faudra l'adapter si on modifie les échanges
+	 */
+	if(toProcess->data[0] == LED_TOGGLE)
+	{
+		BSP_LED_On();
+		BSP_delay_ms(200);
+		BSP_LED_Off();
+		BSP_delay_ms(200);
+		BSP_LED_On();
+		BSP_delay_ms(200);
+		BSP_LED_Off();
+		return EXIT_SUCCESS;
+	} else {
+		BSP_LED_On();
+		BSP_delay_ms(1000);
+		BSP_LED_Off();
+		return EXIT_FAILURE;
+	}
 }

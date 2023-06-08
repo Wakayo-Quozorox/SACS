@@ -30,6 +30,12 @@
  * @return int 1 if error, should never return otherwise
  */
 int controllerMain(void);
-int processData(uint8_t *data);
+/**
+ * @brief Process the data received from the subordinate
+ * 
+ * @param toProcess 
+ * @return int EXIT_SUCCESS if data is the same as sent, EXIT_FAILURE otherwise
+ */
+int processDataController(frameSASCS_s *toProcess);
 
 #endif /* APP_INC_CONTROLLER_H_ */

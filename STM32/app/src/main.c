@@ -29,8 +29,6 @@ int main()
 	BSP_SPI1_Init();
 	// Initialize Debug Console
 	BSP_Console_Init();
-	// Initialize LED
-	BSP_LED_Init();
 
 	my_printf("Console ready!\r\n");
 
@@ -40,6 +38,7 @@ int main()
 
 	while(1)
 	{
+		controllerMain();
 	}
 }
 
