@@ -6,13 +6,15 @@
  */
 
 #include "controller.h"
+#include "bsp.h"
 
 #define RECEIVE_TIMEOUT 	100
 #define LED_PACKET_SIZE		1
 
 int controllerMain(void) {
 	uint32_t curtime = 0;
-	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, LED_TOGGLE, 0};
+	uint8_t ledData[] = {LED_TOGGLE};
+	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, ledData, 0};
 	frameSACS_s receivedPacket;
 	uint8_t receiveStatus;
 
@@ -29,7 +31,7 @@ int controllerMain(void) {
 		}
 
 		/* Receive data from subordonate */
-		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT) != RECEIVE_OK);
+		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
@@ -52,8 +54,12 @@ int controllerMain(void) {
 
 		processData(receivedPacket.data);
 
-		/* Wait for a second */
-		BSP_delay_ms(1000);
+		/* Wait for a second and blink LED */
+		BSP_delay_ms(800);
+		BSP_LED_On();
+		BSP_delay_ms(200);
+		BSP_LED_Off();
+		
 	}
 
 	/* Should never go there */

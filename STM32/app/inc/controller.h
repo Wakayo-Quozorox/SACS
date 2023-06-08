@@ -24,6 +24,11 @@
 #define ACK             1
 #define NACK            0
 
+/**
+ * @brief Run the controller core function
+ * 
+ * @return int 1 if error, should never return otherwise
+ */
 int controllerMain(void);
 int processData(uint8_t *data);
 

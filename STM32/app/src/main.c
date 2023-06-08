@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -29,6 +29,8 @@ int main()
 	BSP_SPI1_Init();
 	// Initialize Debug Console
 	BSP_Console_Init();
+	// Initialize LED
+	BSP_LED_Init();
 
 	my_printf("Console ready!\r\n");
 
@@ -38,14 +40,6 @@ int main()
 
 	while(1)
 	{
-		curtime=BSP_millis();
-
-		if((curtime%1000)==0)//send every 1000ms
-		{
-			APP_SX1272_runTransmit();
-			//APP_SX1272_runReceive();
-			i++;
-		}
 	}
 }
 
