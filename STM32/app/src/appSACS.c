@@ -1,5 +1,5 @@
 /*
- * app_sacs.c
+ * appSacs.c
  *
  *  Created on: 17 mai 2023
  *      Author: leila.medina
@@ -22,7 +22,7 @@ extern	SX1272status currentstate;
 
 
 ///////////////////////////////////////////////////////////////
-// Envoie de la trame
+// Envoi de la trame
 ///////////////////////////////////////////////////////////////
 // Fonction qui envoie une trame SACS
 // où frame est une structure contenant les paramètres de la trame
