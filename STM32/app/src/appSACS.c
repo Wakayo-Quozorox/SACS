@@ -24,12 +24,17 @@ extern	SX1272status currentstate;
 ///////////////////////////////////////////////////////////////
 // Envoie de la trame
 ///////////////////////////////////////////////////////////////
+// Fonction qui envoie une trame SACS
+// où frame est une structure contenant les paramètres de la trame
+// Renvoie: - 0 si tout est OK
+//   		- 1 si erreur pendant l'execution de la commande
+//			- 2 si la commande n'a pas été executée
 uint8_t APP_SACS_send(frameSACS_s frame)
 {
 	uint8_t dest_address = TX_Addr;
 	uint16_t LgMsg = 0;
 	uint8_t error = 0;
-	uint8_t size = 2+frame.size_data+1; // START(1 byte) + ID/ACK/SIZE_DATA (1 byte) + DATA (SIZE_DATA byte) + END(1 byte)
+	uint8_t size = 2+frame.size_data+2+1; // START(1 byte) + ID/ACK/SIZE_DATA (1 byte) + DATA (SIZE_DATA byte) + CRC (2 bytes) + END(1 byte)
 	uint8_t payload[size];
 
 	// START OF FRAME //
@@ -41,6 +46,9 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	// DATA //
 	for(uint8_t i=2; i<frame.size_data+2; i++)
 		payload[i]=frame.data[i-2];
+
+	// CRC //
+	APP_SACS_setCRC(payload,size);
 
 	// END OF FRAME //
 	payload[size-1]= 0b00000000;
@@ -54,13 +62,20 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 ///////////////////////////////////////////////////////////////
 // Reception de la trame
 ///////////////////////////////////////////////////////////////
+// Fonction qui envoie une trame SACS
+// où frame est une structure contenant les paramètres de la trame
+// et timeOut est le temps limite pour que la commande s'execute.
+// Renvoie: - 0 si tout est OK
+//   		- 1 si erreur pendant l'execution de la commande
+//			- 2 si la commande n'a pas été executée
+//          - 3 Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
 uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 {
 	uint8_t error = 0;
 	uint8_t size_payload = 0;
 	uint8_t payload[MAX_SIZE_PAYLOAD];
 
-    error = BSP_SX1272_receivePacketTimeout(WaitRxMax);
+    error = BSP_SX1272_receivePacketTimeout(timeOut);
 
     if (error == 0){
         size_payload = currentstate.packet_received.length;
@@ -71,6 +86,12 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
         frame->size_data = size_payload-3;
         for(int i = 2; i<frame->size_data+2; i++)
         	frame->data[i-2]=payload[i];
+        frame->crc = (uint16_t)payload[size_payload - 3] << 8 | payload[size_payload - 2];
+        //Check CRC
+        error = APP_SACS_checkCRC(payload, size_payload);
+    }else
+    {
+    	my_printf("Reception Error\r\n");
     }
 
 	return error;
@@ -114,7 +135,7 @@ uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size)
   }
   else
   {
-    return 1; // Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
+    return 3; // Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
   }
 }
 
