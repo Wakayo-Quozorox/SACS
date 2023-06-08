@@ -17,8 +17,12 @@ extern SX1272status currentstate;
 ///////////////////////////////////////////////////////////////
 // D�claration variables globales
 ///////////////////////////////////////////////////////////////
-static char LgMsg = 0;
-static char Message[] = "Salut Francis, comment vas-tu ?";
+static uint16_t LgMsg = 0;
+//static char Message[] = "Salut Francis, comment vas-tu prout ?";
+
+static uint8_t Message[] = {0b10101010,0b00010001,0b01100110,0b01110010,0b01100001,0b01101101,0b01100010,0b01101111,0b01101001,0b01110011,0b01100101,0b00000000};
+
+
 static float waitPeriod = 0; //en ms
 static int cp = 0;  //compteur de paquets transmis
 static int type_modulation=TypeModulation;
@@ -141,8 +145,8 @@ void APP_SX1272_runTransmit(adrr,msg)
   if (ConfigOK == 1)
   {
 
-    LgMsg=strlen(msg);
-    e = BSP_SX1272_sendPacketTimeout(dest_address,msg,WaitTxMax);
+    LgMsg=sizeof(Message) / sizeof(Message[0]);
+    e = BSP_SX1272_sendPacketTimeout(dest_address,Message,LgMsg,WaitTxMax);
 
     if(type_modulation)
     {
@@ -189,7 +193,7 @@ void APP_SX1272_runReceive()
        // Check if the received packet is correct
        // The length and the content of the packet is checked
        // if it is valid, the cpok counter is incremented
-       LgMsg=strlen(Message);
+       LgMsg=sizeof(Message) / sizeof(Message[0]);
        if(currentstate.packet_received.length>=LgMsg)//check the length
        {
         if(memcmp(Message,currentstate.packet_received.data,LgMsg)==0)//check the content
