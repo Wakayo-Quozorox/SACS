@@ -57,5 +57,3 @@ uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size);
 void APP_SACS_setCRC(uint8_t *payload, uint8_t size);
 
 #endif /* APP_INC_APPSACS_H_ */
-
-#endif /* APP_INC_APPSACS_H_ */

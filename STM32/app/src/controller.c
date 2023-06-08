@@ -6,7 +6,6 @@
  */
 
 #include "controller.h"
-#include "bsp.h"
 
 #define RECEIVE_TIMEOUT 	100
 #define LED_PACKET_SIZE		1
@@ -57,7 +56,7 @@ int controllerMain(void) {
 		processDataController(&receivedPacket);
 
 		/* Wait for a second and blink LED */
-		BSP_delay_ms(600);
+		BSP_DELAY_ms(600);
 		shortBlink(1);
 		
 	}
@@ -92,9 +91,9 @@ void shortBlink(uint8_t nbBlink) {
 	for (uint8_t i = 0; i < nbBlink; ++i)
 	{
 		BSP_LED_On();
-		BSP_delay_ms(200);
+		BSP_DELAY_ms(200);
 		BSP_LED_Off();
-		BSP_delay_ms(200);
+		BSP_DELAY_ms(200);
 	}
 }
 
@@ -102,8 +101,8 @@ void longBlink(uint8_t nbBlink) {
 	for (uint8_t i = 0; i < nbBlink; ++i)
 	{
 		BSP_LED_On();
-		BSP_delay_ms(1000);
+		BSP_DELAY_ms(1000);
 		BSP_LED_Off();
-		BSP_delay_ms(1000);
+		BSP_DELAY_ms(1000);
 	}
 }

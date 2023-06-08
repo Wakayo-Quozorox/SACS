@@ -9,6 +9,7 @@
 #define APP_INC_CONTROLLER_H_
 
 #include "appSACS.h"
+#include "bsp.h"
 
 /* temporaire, à intégrer dans appSACS.h */
 #define SID1		0x03
@@ -37,7 +38,7 @@ int controllerMain(void);
  * @param toProcess 
  * @return int EXIT_SUCCESS if data is the same as sent, EXIT_FAILURE otherwise
  */
-int processDataController(frameSASCS_s *toProcess);
+int processDataController(frameSACS_s *toProcess);
 
 /**
  * @brief Blink the LED a certain number of times
