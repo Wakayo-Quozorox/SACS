@@ -13,8 +13,6 @@
 #include "string.h"
 #include "delay.h"
 
-#define CRC16_POLY 0x1021 // Polynôme CRC-16-CCITT
-
 // Fonction qui calcule le CRC avec le Polynôme CRC-16-CCITT
 // où payload est la trame sous forme de tableau et sizeCRC est la taille du tableau à checker
 // Renvoie les 16bits du CRC dans un uint16_t
