@@ -10,19 +10,42 @@
 
 #include "SX1272.h"
 
-#define MAX_SIZE_DATA 16
-#define MAX_SIZE_PAYLOAD 19
+/* SID defines */
+#define SID1				0x03
+/* LED operations */
+#define LED_ON				0x11
+#define LED_OFF				0x10
+#define LED_TOGGLE			0x12
+#define LED_PACKET_SIZE		1
 
-#define CRC16_POLY 0x1021 // Polynôme CRC-16-CCITT
+/* send relative defines */
+#define SEND_ERROR	    	1
+#define SEND_OK		    	0
 
-#define MASK_ACKNOLEDGE 0b00000001
+/* receive relative defines */
+#define RECEIVE_OK	    	0   
+#define RECEIVE_ERROR		1
+#define RECEIVE_COMMANND_NOT_EXECUTED	2
+#define CRC_ERROR	   		3
+#define RECEIVE_TIMEOUT 	100
+
+/* ACK relative defines */
+#define ACK             	1
+#define NACK            	0
+#define MASK_ACKNOLEDGE 	0b00000001
+
+/* DATA management constants */
+#define MAX_SIZE_DATA 		16
+#define MAX_SIZE_PAYLOAD 	19
+
+#define CRC16_POLY 			0x1021 // Polynôme CRC-16-CCITT
 
 typedef struct frameSACS_s {
-	uint8_t sid;                  // SLAVE ID
-	uint8_t ack;                  // ACKNOWLEDGEMENT
-	uint8_t sizeData;            // SIZE DATA
-	uint8_t data[MAX_SIZE_DATA];  // DATA
-	uint16_t crc;	              // CRC
+	uint8_t sid;                  	// SLAVE ID
+	uint8_t ack;                  	// ACKNOWLEDGEMENT
+	uint8_t sizeData;            	// SIZE DATA
+	uint8_t data[MAX_SIZE_DATA];  	// DATA
+	uint16_t crc;	              	// CRC
 } frameSACS_s;
 
 // Fonction qui envoie une trame SACS

@@ -12,28 +12,12 @@
 #include "SX1272.h"
 #include "appSX1272.h"
 #include "appSACS.h"
+#include "controller.h"
 
 static void SystemClock_Config();
 
 int main()
 {
-	uint32_t curtime=0;
-	frameSACS_s frame;
-//	frame.data[0]=0b01100110; //f
-//	frame.data[1]=0b01110010; //r
-//	frame.data[2]=0b01100001; //a
-//	frame.data[3]=0b01101101; //m
-//	frame.data[4]=0b01100010; //b
-//	frame.data[5]=0b01101111; //o
-//	frame.data[6]=0b01101001; //i
-//	frame.data[7]=0b01110011; //s
-//	frame.data[8]=0b01100101; //e
-//	frame.sizeData = 9;
-//	frame.sid = 0;
-//	frame.ack = 1;
-	uint8_t error = 0;
-	uint32_t timeOut = 1000;
-
 	// Initialize System clock to 48MHz from external clock
 	SystemClock_Config();
 	// Initialize timebase

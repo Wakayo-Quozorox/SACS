@@ -7,13 +7,8 @@
 
 #include "controller.h"
 
-#define RECEIVE_TIMEOUT 	100
-#define LED_PACKET_SIZE		1
-
 int controllerMain(void) {
-	uint32_t curtime = 0;
-	uint8_t ledData[] = {LED_TOGGLE};
-	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, ledData, 0};
+	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, {LED_TOGGLE}, 0};
 	frameSACS_s receivedPacket;
 	uint8_t receiveStatus;
 
@@ -45,10 +40,20 @@ int controllerMain(void) {
 				my_printf("Receive ERROR\r\n");
 			#endif
 			break;
-		
+		case RECEIVE_COMMANND_NOT_EXECUTED:
+			#if DEBUG
+				my_printf("Command not executed\r\n");
+			#endif
+			break;
+		case CRC_ERROR:
+			#if DEBUG
+				my_printf("CRC ERROR\r\n");
+			#endif
+			break;
+
 		default:
 			#if DEBUG
-				my_printf("Unmanaged receive error\r\n");
+				my_printf("Unmanaged receive ERROR\r\n");
 			#endif
 			break;
 		}
@@ -87,22 +92,3 @@ int processDataController(frameSACS_s *toProcess) {
 	}
 }
 
-void shortBlink(uint8_t nbBlink) {
-	for (uint8_t i = 0; i < nbBlink; ++i)
-	{
-		BSP_LED_On();
-		BSP_DELAY_ms(200);
-		BSP_LED_Off();
-		BSP_DELAY_ms(200);
-	}
-}
-
-void longBlink(uint8_t nbBlink) {
-	for (uint8_t i = 0; i < nbBlink; ++i)
-	{
-		BSP_LED_On();
-		BSP_DELAY_ms(1000);
-		BSP_LED_Off();
-		BSP_DELAY_ms(1000);
-	}
-}
