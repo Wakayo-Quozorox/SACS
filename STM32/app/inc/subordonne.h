@@ -22,5 +22,5 @@
 #define NACK            0
 
 int subordonneMain(void);
-int processData(uint8_t *data);
+int processDatasub(uint8_t *data);
 #endif /* APP_INC_CONTROLLER_H_ */

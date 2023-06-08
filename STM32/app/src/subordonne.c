@@ -16,9 +16,46 @@ int subordonneMain(void) {
 	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, LED_TOGGLE, 0};
 	frameSACS_s receivedPacket;
 	uint8_t receiveStatus;
+    uint8_t datarcv
 
 	while(1)
 	{
+        /* Receive data from controller */
+		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT) != RECEIVE_OK);
+		switch (receiveStatus)
+		{
+		case RECEIVE_OK:
+			#if DEBUG
+				my_printf("Receive OK\r\n");
+			#endif
+            datarcv=receivedPacket.data[0];
+            switch (datarcv)
+            {
+                case LED_ON:
+                    BSP_LED_On();
+                    break;
+                case LED_OFF:
+                    BSP_LED_Off();
+                    break;
+                case LED_TOGGLE:
+                    BSP_LED_Toggle();
+                    break;
+            }
+			break;
+		case RECEIVE_ERROR:
+			#if DEBUG
+				my_printf("Receive ERROR\r\n");
+			#endif
+            packetLed.ack=NACK;
+			break;
+		
+		default:
+			#if DEBUG
+				my_printf("Unmanaged receive error\r\n");
+			#endif
+            packetLed.ack=NACK;
+			break;
+
 		/* Send ACK packet */
 		if(APP_SACS_send(packetLed) != SEND_OK)
 		{
@@ -29,44 +66,14 @@ int subordonneMain(void) {
 			#endif
 		}
 
-		/* Receive data from controller */
-		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT) != RECEIVE_OK);
-		switch (receiveStatus)
-		{
-		case RECEIVE_OK:
-			#if DEBUG
-				my_printf("Receive OK\r\n");
-                frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, LED_TOGGLE, 0};
-                if (LED_TOGGLE==0x12)
-                {
-                    BSP_LED_Toggle()
-                }
-			#endif
-			break;
-		case RECEIVE_ERROR:
-			#if DEBUG
-				my_printf("Receive ERROR\r\n");
-                frameSACS_s packetLed = {SID1,NACK,LED_PACKET_SIZE,LED_TOGGLE,0};
-			#endif
-			break;
 		
-		default:
-			#if DEBUG
-				my_printf("Unmanaged receive error\r\n");
-                frameSACS_s packetLed = {SID1,NACK,LED_PACKET_SIZE,LED_TOGGLE,0};
-			#endif
-			break;
 		}
 
-		processData(receivedPacket.data);
-
-		/* Wait for a second */
-		BSP_delay_ms(1000);
 	}
 	/* Should never go there */
 	return EXIT_FAILURE;
 }
-int processData(uint8_t *data) {
+int processDatasub(uint8_t *data) {
 	/* Insert code here */
 	#if DEBUG
 		my_printf("Data received:\r\n");
