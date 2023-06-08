@@ -15,15 +15,24 @@
 
 static void SystemClock_Config();
 
-// Défini juste pour tester le calcul et le check du CRC :
-static uint8_t payload[] = {0b10101010,0b00010001,0b00000000,0b00000000,0b00000000};
-static uint8_t sizePayload = 5;
-static uint8_t state = 0;
-
 int main()
 {
 	uint32_t curtime=0;
-	uint32_t i=0;
+	frameSACS_s frame;
+//	frame.data[0]=0b01100110; //f
+//	frame.data[1]=0b01110010; //r
+//	frame.data[2]=0b01100001; //a
+//	frame.data[3]=0b01101101; //m
+//	frame.data[4]=0b01100010; //b
+//	frame.data[5]=0b01101111; //o
+//	frame.data[6]=0b01101001; //i
+//	frame.data[7]=0b01110011; //s
+//	frame.data[8]=0b01100101; //e
+//	frame.sizeData = 9;
+//	frame.sid = 0;
+//	frame.ack = 1;
+	uint8_t error = 0;
+	uint32_t timeOut = 1000;
 
 	// Initialize System clock to 48MHz from external clock
 	SystemClock_Config();
@@ -56,27 +65,19 @@ int main()
 
 	while(1)
 	{
-		APP_SACS_setCRC(payload, sizePayload);
-		state = APP_SACS_checkCRC(payload, sizePayload);
 
 		curtime=BSP_millis();
 
-		if((curtime%1000)==0)//receive every 1000ms
+		if((curtime%1000)==0 && error==0)//send every 1000ms
 		{
-			data,valid=APP_SX1272_runReceive();
-			if (valid=='1')
-			{
-				switch( data[0] )
-				{
-    				case 'A':
-        				my_printf("Lancement de la fonction A\r\n");
-    				case 'B':
-        				my_printf("Lancement de la fonction B\r\n");
-    				default :
-        				my_printf("En attente de réception\r\n");
-				}
-				APP_SX1272_runTransmit();
-			}
+			//error=APP_SACS_send(frame);
+			error=APP_SACS_receive(&frame,timeOut);
+		}else if(error!=0)
+		{
+			my_printf("Error in receiver\r\n");
+		} else
+		{
+			//Default: nothing happens
 		}
 	}
 }
