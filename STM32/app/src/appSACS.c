@@ -77,69 +77,58 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
     {
     	my_printf("Problème de réception");
     }
-    else
+    else // on continue
     {
-		// on continue
-    }
+		sizePayload = currentstate._payloadlength;  // Taille totale de la payload
+		if (sizePayload >= MAX_SIZE_PAYLOAD) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
+		{
+			my_printf("La taille de la trame reçue est superieure a la taille maximale");
+			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
+		}
+		else // on continue
+		{
+			my_printf("\n\r");
+			my_printf("TRAME: ");
 
-	sizePayload = currentstate._payloadlength;  // Taille totale de la payload
-	if (sizePayload >= MAX_SIZE_PAYLOAD) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
-	{
-		my_printf("La taille de la trame reçue est superieure a la taille maximale");
-		error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
-	}
-	else
-	{
-		// on continue
-	}
+			for(uint8_t i = 0; i<sizePayload; i++) // Remplissage de la payload avec les donnees recues
+			{
+				payload[i] = currentstate.packet_received.data[i];
+				my_printf("%x",payload[i]);
+				my_printf(" ");
+			}
 
-    if (error == RECEIVE_OK) // La reception a été effectuee sans erreurs
-    {
-        my_printf("\n\r");
-        my_printf("TRAME: ");
+			error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
 
-        for(uint8_t i = 0; i<sizePayload; i++) // Remplissage de la payload avec les donnees recues
-        {
-        	payload[i] = currentstate.packet_received.data[i];
-        	my_printf("%x",payload[i]);
-        	my_printf(" ");
-        }
+			if (error != RECEIVE_OK)  // Les données sont invalides
+			{
+				my_printf("CRC invalide, trame ignorée !\r\n");
+			}
+			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
+			{
+				// SID //
+				frame->sid = payload[1]>>5;
 
-        error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
+				// ACKNOWLEDGE //
+				frame->ack = payload[1]>>4 && MASK_ACKNOLEDGE;
 
-        if (error == RECEIVE_OK) // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
-        {
-            // SID //
-            frame->sid = payload[1]>>5;
+				// SIZE DATA //
+				frame->sizeData = sizePayload-5;
 
-            // ACKNOWLEDGE //
-            frame->ack = payload[1]>>4 && MASK_ACKNOLEDGE;
+				// DATA //
+				my_printf("\n\r");
+				my_printf("DONNEE: ");
 
-            // SIZE DATA //
-            frame->sizeData = sizePayload-5;
+				for(int i = 2; i<frame->sizeData+2; i++)
+				{
+					frame->data[i-2]=payload[i];
+					my_printf("%c",frame->data[i-2]);
+				}
+				my_printf("\n\r");
 
-            // DATA //
-            my_printf("\n\r");
-            my_printf("DONNEE: ");
-
-            for(int i = 2; i<frame->sizeData+2; i++)
-            {
-            	frame->data[i-2]=payload[i];
-            	my_printf("%c",frame->data[i-2]);
-            }
-            my_printf("\n\r");
-
-            // CRC //
-            frame->crc = (uint16_t)payload[sizePayload - 3] << 8 | payload[sizePayload - 2];
-        }
-        else // Les données sont invalides
-        {
-        	my_printf("CRC invalide, trame ignorée !\r\n");
-        }
-
-    }else
-    {
-    	my_printf("Des erreurs ont été détectées\r\n");
+				// CRC //
+				frame->crc = (uint16_t)payload[sizePayload - 3] << 8 | payload[sizePayload - 2];
+			}
+		}
     }
 
 	return error;
