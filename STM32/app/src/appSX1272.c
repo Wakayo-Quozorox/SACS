@@ -138,7 +138,7 @@ void APP_SX1272_setup()
 
 void APP_SX1272_runTransmit(adrr,msg)
 {
-  uint8_t dest_address = addr;
+  uint8_t dest_address = adrr;
 
   //////////////////////////////////////////////////////////////////////////////////
   // Transmit a packet continuously with a pause of "waitPeriod"
@@ -172,7 +172,7 @@ void APP_SX1272_runTransmit(adrr,msg)
 void APP_SX1272_runReceive()
 {
   char StatusRXMessage='0';
-
+  uint8_t a[]={0};
   //////////////////////////////////////////////////////////////////////////////////
   // Receive packets continuously
   if (ConfigOK == 1)

@@ -12,13 +12,89 @@
 #include "SX1272.h"
 #include "appSX1272.h"
 #include "appSACS.h"
+#include "subordonne.h"
 
 static void SystemClock_Config();
 
+#define RECEIVE_TIMEOUT 	100
+#define LED_PACKET_SIZE		1
+
+int subordonneMain(void) {
+	uint32_t curtime = 0;
+	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, LED_TOGGLE, 0};
+	frameSACS_s receivedPacket;
+	uint8_t receiveStatus;
+
+	while(1)
+	{
+		BSP_LED_Init();
+
+        /* Receive data from controller */
+		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
+		switch (receiveStatus)
+		{
+		case RECEIVE_OK:
+			#if DEBUG
+				my_printf("Receive OK\r\n");
+			#endif
+			/* Verification de l'action à réaliser */
+            switch (receivedPacket.data[0]);
+            {
+                case LED_ON:
+                    BSP_LED_On();
+					packetLed.ack = ACK;
+                    break;
+                case LED_OFF:
+                    BSP_LED_Off();
+					packetLed.ack = ACK;
+                    break;
+                case LED_TOGGLE:
+                    BSP_LED_Toggle();
+					packetLed.ack = ACK;
+                    break;
+				/*default:
+					Incorrect value
+					packetLed.ack = NACK;
+					*/
+            }
+			break;
+
+		case RECEIVE_ERROR:
+			#if DEBUG
+				my_printf("Receive ERROR\r\n");
+			#endif
+            packetLed.ack = NACK;
+			break;
+
+		default:
+			#if DEBUG
+				my_printf("Unmanaged receive error\r\n");
+			#endif
+            packetLed.ack = NACK;
+			break;
+		}
+
+		/* Send ACK packet */
+		if(APP_SACS_send(packetLed) != SEND_OK)
+		{
+			#if DEBUG
+				my_printf("Send ERROR\r\n");
+			#endif
+			return SEND_ERROR;
+		} else {
+			#if DEBUG
+				my_printf("Send OK\r\n");
+			#endif
+		}
+	}
+	/* Should never go there */
+	return EXIT_FAILURE;
+}
+
 int main()
 {
-	uint32_t curtime=0;
-	frameSACS_s frame;
+//	uint32_t curtime=0;
+//	frameSACS_s frame;
 //	frame.data[0]=0b01100110; //f
 //	frame.data[1]=0b01110010; //r
 //	frame.data[2]=0b01100001; //a
@@ -31,8 +107,8 @@ int main()
 //	frame.sizeData = 9;
 //	frame.sid = 0;
 //	frame.ack = 1;
-	uint8_t error = 0;
-	uint32_t timeOut = 1000;
+//	uint8_t error = 0;
+//	uint32_t timeOut = 1000;
 
 	// Initialize System clock to 48MHz from external clock
 	SystemClock_Config();
@@ -62,24 +138,7 @@ int main()
 	// 		i++;
 	// 	}
 	// }
-
-	while(1)
-	{
-
-		curtime=BSP_millis();
-
-		if((curtime%1000)==0 && error==0)//send every 1000ms
-		{
-			//error=APP_SACS_send(frame);
-			error=APP_SACS_receive(&frame,timeOut);
-		}else if(error!=0)
-		{
-			my_printf("Error in receiver\r\n");
-		} else
-		{
-			//Default: nothing happens
-		}
-	}
+	subordonneMain();
 }
 
 /*
