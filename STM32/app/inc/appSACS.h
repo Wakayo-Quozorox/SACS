@@ -10,10 +10,19 @@
 
 #include "SX1272.h"
 
-#define MAX_SIZE_DATA 16
+#define MAX_SIZE_DATA    16
 #define MAX_SIZE_PAYLOAD 19
+#define SHIFT_SLAVE_ID    5
+#define SHIFT_ACK         4
+#define NB_BYTE_SOF       1
+#define NB_BYTE_EOF       1
+#define NB_BYTE_CRC       2
+#define NB_BYTE_PARAM     1
 
 #define CRC16_POLY 0x1021 // Polynôme CRC-16-CCITT
+
+#define START_OF_FRAME 0b10101010
+#define END_OF_FRAME   0b00000000
 
 #define MASK_ACKNOLEDGE 0b00000001
 

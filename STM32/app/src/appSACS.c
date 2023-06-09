@@ -34,14 +34,15 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	uint8_t dest_address = TX_Addr;
 	uint16_t LgMsg = 0;
 	uint8_t error = 0;
-	uint8_t size = 2+frame.sizeData+2+1; // START(1 byte) + ID/ACK/SIZE_DATA (1 byte) + DATA (SIZE_DATA byte) + CRC (2 bytes) + END(1 byte)
+	// START(1 byte) + ID/ACK/SIZE_DATA (1 byte) + DATA (SIZE_DATA byte) + CRC (2 bytes) + END(1 byte)
+	uint8_t size = NB_BYTE_SOF+NB_BYTE_PARAM+frame.sizeData+NB_BYTE_CRC+NB_BYTE_EOF;
 	uint8_t payload[size];
 
 	// START OF FRAME //
-	payload[0] =  0b10101010; // Sequence of 1 and 0
+	payload[0] =  START_OF_FRAME; // Sequence of 1 and 0
 
 	//ID SLAVE + ACKNOWLEDGE + SIZE_DATA //
-	payload[1] = frame.sid<<5 | frame.ack <<4 | (frame.sizeData-1);
+	payload[1] = frame.sid<<SHIFT_SLAVE_ID | frame.ack <<SHIFT_ACK | (frame.sizeData-1);
 
 	// DATA //
 	for(uint8_t i=2; i<frame.sizeData+2; i++)
@@ -51,7 +52,7 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	APP_SACS_setCRC(payload,size);
 
 	// END OF FRAME //
-	payload[size-1]= 0b00000000;
+	payload[size-1]= END_OF_FRAME;
 
     LgMsg=sizeof(payload) / sizeof(payload[0]);
     error = BSP_SX1272_sendPacketTimeout(dest_address,payload,LgMsg,WaitTxMax);
