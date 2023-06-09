@@ -23,6 +23,7 @@
 #define NB_BYTE_DEFORE_DATA (NB_BYTE_SOF+NB_BYTE_PARAM) // Nombre d'octet avant la donnee
 #define NB_BYTE_AFTER_DATA  (NB_BYTE_CRC+NB_BYTE_EOF)   // Nombre d'octet apres la donnee
 
+#define SIZE_ERROR        4 // Code d'erreur: La taille de la trame depasse la taille maximale
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 #define RECEIVE_FAILED	  2 // Code d'erreur: La commande n'a pas ete executee
 #define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
