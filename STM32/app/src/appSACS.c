@@ -73,7 +73,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 	uint8_t payload[MAX_SIZE_PAYLOAD] = {0};
 
     error = BSP_SX1272_receivePacketTimeout(timeOut); // Réceptionne tout ce qui passe avec un timeout
-    if (error != 0)
+    if (error != RECEIVE_OK)
     {
     	my_printf("Problème de réception");
     }
@@ -86,14 +86,14 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 	if (sizePayload >= MAX_SIZE_PAYLOAD) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
 	{
 		my_printf("La taille de la trame reçue est superieure a la taille maximale");
-		error = 1; // La trame reçue n'a pas la bonne taille
+		error = RECEIVE_ERROR; // La trame reçue n'a pas la bonne taille
 	}
 	else
 	{
 		// on continue
 	}
 
-    if (error == 0) // La reception a été effectuee sans erreurs
+    if (error == RECEIVE_OK) // La reception a été effectuee sans erreurs
     {
         my_printf("\n\r");
         my_printf("TRAME: ");
@@ -107,7 +107,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 
         error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
 
-        if (error == 0) // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
+        if (error == RECEIVE_OK) // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
         {
             // SID //
             frame->sid = payload[1]>>5;
