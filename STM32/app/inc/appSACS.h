@@ -10,14 +10,26 @@
 
 #include "SX1272.h"
 
-#define MAX_SIZE_DATA    16
-#define MAX_SIZE_PAYLOAD 19
-#define SHIFT_SLAVE_ID    5
-#define SHIFT_ACK         4
-#define NB_BYTE_SOF       1
-#define NB_BYTE_EOF       1
-#define NB_BYTE_CRC       2
-#define NB_BYTE_PARAM     1
+#define MAX_SIZE_DATA    16 // Taille de la donnee
+#define MAX_SIZE_PAYLOAD 19 // Taille de la payload
+
+#define SHIFT_SID         5 // Decalage de sub ID dans l'octet de parametre
+#define SHIFT_ACK         4 // Decalage de l'acknowledge dans l'octet de parametre
+
+#define NB_BYTE_SOF       1 // Nombre d'octet du debut de trame
+#define NB_BYTE_EOF       1 // Nombre d'octet de fin de trame
+#define NB_BYTE_CRC       2 // Nombre d'octet du CRC
+#define NB_BYTE_PARAM     1 // Nombre d'octet des parametres de la donnee
+#define NB_BYTE_DEFORE_DATA (NB_BYTE_SOF+NB_BYTE_PARAM) // Nombre d'octet avant la donnee
+#define NB_BYTE_AFTER_DATA  (NB_BYTE_CRC+NB_BYTE_EOF)   // Nombre d'octet apres la donnee
+
+#define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
+#define RECEIVE_FAILED	  2 // Code d'erreur: La commande n'a pas ete executee
+#define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
+#define RECEIVE_OK	      0 // Reception ok
+
+#define ACK               1 // La donnee est reconnue
+#define NACK              0 // La donnee n'est pas reconnue
 
 #define CRC16_POLY 0x1021 // Polynôme CRC-16-CCITT
 
@@ -27,9 +39,9 @@
 #define MASK_ACKNOLEDGE 0b00000001
 
 typedef struct frameSACS_s {
-	uint8_t sid;                  // SLAVE ID
+	uint8_t sid;                  // SUB ID
 	uint8_t ack;                  // ACKNOWLEDGEMENT
-	uint8_t sizeData;            // SIZE DATA
+	uint8_t sizeData;             // SIZE DATA
 	uint8_t data[MAX_SIZE_DATA];  // DATA
 	uint16_t crc;	              // CRC
 } frameSACS_s;

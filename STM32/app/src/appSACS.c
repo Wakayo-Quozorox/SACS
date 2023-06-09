@@ -19,8 +19,6 @@
 ///////////////////////////////////////////////////////////////
 extern	SX1272status currentstate;
 
-
-
 ///////////////////////////////////////////////////////////////
 // Envoi de la trame
 ///////////////////////////////////////////////////////////////
@@ -42,11 +40,11 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	payload[0] =  START_OF_FRAME; // Sequence of 1 and 0
 
 	//ID SLAVE + ACKNOWLEDGE + SIZE_DATA //
-	payload[1] = frame.sid<<SHIFT_SLAVE_ID | frame.ack <<SHIFT_ACK | (frame.sizeData-1);
+	payload[1] = frame.sid<<SHIFT_SID | frame.ack <<SHIFT_ACK | (frame.sizeData-1);
 
 	// DATA //
-	for(uint8_t i=2; i<frame.sizeData+2; i++)
-		payload[i]=frame.data[i-2];
+	for(uint8_t i=NB_BYTE_DEFORE_DATA; i<frame.sizeData+NB_BYTE_DEFORE_DATA; i++)
+		payload[i]=frame.data[i-NB_BYTE_DEFORE_DATA];
 
 	// CRC //
 	APP_SACS_setCRC(payload,size);
@@ -92,21 +90,21 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 
         // Remplissage de la structure frame
         // SID //
-        frame->sid = payload[1]>>5;
+        frame->sid = payload[1]>>SHIFT_SID;
 
         // ACKNOWLEDGE //
-        frame->ack = payload[1]>>4 && MASK_ACKNOLEDGE;
+        frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
 
         // SIZE DATA //
-        frame->sizeData = sizePayload-5;
+        frame->sizeData = sizePayload-(NB_BYTE_SOF+NB_BYTE_PARAM+NB_BYTE_CRC+NB_BYTE_EOF);
 
         // DATA //
         my_printf("\n\r");
         my_printf("DONNEE: ");
-        for(int i = 2; i<frame->sizeData+2; i++)
+        for(int i = NB_BYTE_DEFORE_DATA; i<frame->sizeData+NB_BYTE_DEFORE_DATA; i++)
         {
-        	frame->data[i-2]=payload[i];
-        	my_printf("%c",frame->data[i-2]);
+        	frame->data[i-NB_BYTE_DEFORE_DATA]=payload[NB_BYTE_DEFORE_DATA];
+        	my_printf("%c",frame->data[i-NB_BYTE_DEFORE_DATA]);
         }
         my_printf("\n\r");
         // CRC //
