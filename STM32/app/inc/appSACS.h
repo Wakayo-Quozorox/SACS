@@ -10,8 +10,9 @@
 
 #include "SX1272.h"
 
-#define MAX_SIZE_DATA    16 // Taille de la donnee
-#define MAX_SIZE_PAYLOAD 19 // Taille de la payload
+#define MAX_DATA_SIZE    16 // Taille de la donnee
+#define MAX_PAYLOAD_SIZE 19 // Taille de la payload
+#define BYTE_SIZE         8 // Octet
 
 #define SHIFT_SID         5 // Decalage de sub ID dans l'octet de parametre
 #define SHIFT_ACK         4 // Decalage de l'acknowledge dans l'octet de parametre
@@ -20,11 +21,12 @@
 #define NB_BYTE_EOF       1 // Nombre d'octet de fin de trame
 #define NB_BYTE_CRC       2 // Nombre d'octet du CRC
 #define NB_BYTE_PARAM     1 // Nombre d'octet des parametres de la donnee
-#define NB_BYTE_DEFORE_DATA (NB_BYTE_SOF+NB_BYTE_PARAM) // Nombre d'octet avant la donnee
+#define NB_BYTE_BEFORE_DATA (NB_BYTE_SOF+NB_BYTE_PARAM) // Nombre d'octet avant la donnee
 #define NB_BYTE_AFTER_DATA  (NB_BYTE_CRC+NB_BYTE_EOF)   // Nombre d'octet apres la donnee
 
 #define SIZE_ERROR        4 // Code d'erreur: La taille de la trame depasse la taille maximale
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
+#define CRC_OK			  0 // CRC ok
 #define RECEIVE_FAILED	  2 // Code d'erreur: La commande n'a pas ete executee
 #define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
 #define RECEIVE_OK	      0 // Reception ok
@@ -32,18 +34,20 @@
 #define ACK               1 // La donnee est reconnue
 #define NACK              0 // La donnee n'est pas reconnue
 
-#define CRC16_POLY 0x1021 // Polynôme CRC-16-CCITT
+#define START_OF_FRAME  0b10101010  // Debut de trame: AA
+#define END_OF_FRAME    0b00000000  // Fin de trame:   00
+#define INIT_CRC        0xFFFF      // Initialisation du CRC: tous les bits sont mis à 1
+#define CRC16_POLY      0x1021      // Polynôme CRC-16-CCITT
 
-#define START_OF_FRAME 0b10101010
-#define END_OF_FRAME   0b00000000
-
-#define MASK_ACKNOLEDGE 0b00000001
+#define MASK_CRC_MSB	0x8000      // Masque CRC bit de poids fort
+#define MASK_ACKNOLEDGE 0b00000001  // Masque bit d'acknowledge
+#define MASK_RST_MSBYTE 0xFF        // Masque Mise à zéro des bits de poids fort
 
 typedef struct frameSACS_s {
 	uint8_t sid;                  // SUB ID
 	uint8_t ack;                  // ACKNOWLEDGEMENT
 	uint8_t sizeData;             // SIZE DATA
-	uint8_t data[MAX_SIZE_DATA];  // DATA
+	uint8_t data[MAX_DATA_SIZE];  // DATA
 	uint16_t crc;	              // CRC
 } frameSACS_s;
 

@@ -43,8 +43,8 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	payload[1] = frame.sid<<SHIFT_SID | frame.ack <<SHIFT_ACK | (frame.sizeData-1);
 
 	// DATA //
-	for(uint8_t i=NB_BYTE_DEFORE_DATA; i<frame.sizeData+NB_BYTE_DEFORE_DATA; i++)
-		payload[i]=frame.data[i-NB_BYTE_DEFORE_DATA];
+	for(uint8_t i=NB_BYTE_BEFORE_DATA; i<frame.sizeData+NB_BYTE_BEFORE_DATA; i++)
+		payload[i]=frame.data[i-NB_BYTE_BEFORE_DATA];
 
 	// CRC //
 	APP_SACS_setCRC(payload,size);
@@ -72,7 +72,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 {
 	uint8_t error = 0;
 	uint8_t sizePayload = 0;
-	uint8_t payload[MAX_SIZE_PAYLOAD] = {0};
+	uint8_t payload[MAX_PAYLOAD_SIZE] = {0};
 
     error = BSP_SX1272_receivePacketTimeout(timeOut);
 
@@ -96,19 +96,19 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
         frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
 
         // SIZE DATA //
-        frame->sizeData = sizePayload-(NB_BYTE_SOF+NB_BYTE_PARAM+NB_BYTE_CRC+NB_BYTE_EOF);
+        frame->sizeData = sizePayload-(NB_BYTE_BEFORE_DATA+NB_BYTE_AFTER_DATA);
 
         // DATA //
         my_printf("\n\r");
         my_printf("DONNEE: ");
-        for(int i = NB_BYTE_DEFORE_DATA; i<frame->sizeData+NB_BYTE_DEFORE_DATA; i++)
+        for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
         {
-        	frame->data[i-NB_BYTE_DEFORE_DATA]=payload[NB_BYTE_DEFORE_DATA];
-        	my_printf("%c",frame->data[i-NB_BYTE_DEFORE_DATA]);
+        	frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
+        	my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
         }
         my_printf("\n\r");
         // CRC //
-        frame->crc = (uint16_t)payload[sizePayload - 3] << 8 | payload[sizePayload - 2];
+        frame->crc = (uint16_t)payload[sizePayload - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[sizePayload - (NB_BYTE_AFTER_DATA-1)];
         error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
     }else
     {
@@ -124,15 +124,15 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 // ** correspond a CRC-CCITT (0xFFFF) sur ce site https://www.lammertbies.nl/comm/info/crc-calculation
 uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC)
 {
-  uint16_t crc = 0xFFFF; // CRC initial avec tous les bits à 1 (valeur maximale pour un CRC 16 bits)
+  uint16_t crc = INIT_CRC; // CRC initial avec tous les bits à 1 (valeur maximale pour un CRC 16 bits)
 
   // Parcours de chaque octet des données
   for (uint8_t i = 0; i < sizeCRC; i++) {
-    crc ^= (uint16_t)payload[i] << 8; // XOR du CRC avec l'octet courant, décalé de 8 bits vers la gauche
+    crc ^= (uint16_t)payload[i] << BYTE_SIZE; // XOR du CRC avec l'octet courant, décalé de 8 bits vers la gauche
 
     // Parcours de chaque bit de l'octet
-    for (uint8_t j = 0; j < 8; j++) {
-      if (crc & 0x8000) // Vérifie si le bit de poids le plus élevé est à 1
+    for (uint8_t j = 0; j < BYTE_SIZE; j++) {
+      if (crc & MASK_MSB) // Vérifie si le bit de poids le plus élevé est à 1
         crc = (crc << 1) ^ CRC16_POLY; // Décalage du CRC vers la gauche et XOR avec le polynôme
       else
         crc <<= 1; // Décalage du CRC vers la gauche
@@ -147,16 +147,16 @@ uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC)
 // Renvoie 0 si tout est OK et 1 si erreur
 uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size)
 {
-  uint16_t receivedCRC = (uint16_t)payload[size - 3] << 8 | payload[size - 2]; // Récupération du CRC reçu des 2 derniers octets
-  uint16_t calculatedCRC = APP_SACS_calculateCRC(payload, size - 3); // Calcul du CRC pour les données reçues (sans les 2 octets du CRC et la fin de trame)
+  uint16_t receivedCRC = (uint16_t)payload[size - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[size - (NB_BYTE_AFTER_DATA-1)]; // Récupération du CRC reçu des 2 derniers octets
+  uint16_t calculatedCRC = APP_SACS_calculateCRC(payload, size - NB_BYTE_AFTER_DATA); // Calcul du CRC pour les données reçues (sans les 2 octets du CRC et la fin de trame)
 
   if (receivedCRC == calculatedCRC)
   {
-    return 0; // Le CRC reçu correspond au CRC calculé, les données sont valides
+    return CRC_OK; // Le CRC reçu correspond au CRC calculé, les données sont valides
   }
   else
   {
-    return 3; // Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
+    return CRC_ERROR; // Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
   }
 }
 
@@ -168,10 +168,10 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 {
 	uint16_t crc = 0;
 
-	crc = APP_SACS_calculateCRC(payload, size - 3); // Calcul du CRC a partir des données utiles de la trame (tout sauf crc et fin de trame)
+	crc = APP_SACS_calculateCRC(payload, size - NB_BYTE_AFTER_DATA); // Calcul du CRC a partir des données utiles de la trame (tout sauf crc et fin de trame)
 
-	payload[size - 3] = (uint8_t)((crc >> 8) & 0xFF); // Extraction du octet de poids fort (bits 8 à 15)
-	payload[size - 2] = (uint8_t)(crc & 0xFF); // Extraction du octet de poids faible (bits 0 à 7)
+	payload[size - NB_BYTE_AFTER_DATA] = (uint8_t)((crc >> BYTE_SIZE) & MASK_RST_MSBYTE); // Extraction du octet de poids fort (bits 8 à 15)
+	payload[size - (NB_BYTE_AFTER_DATA-1)] = (uint8_t)(crc & MASK_RST_MSBYTE); // Extraction du octet de poids faible (bits 0 à 7)
 
 	return;
 }
