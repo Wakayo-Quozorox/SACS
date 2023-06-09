@@ -86,7 +86,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 	if (sizePayload >= MAX_SIZE_PAYLOAD) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
 	{
 		my_printf("La taille de la trame reçue est superieure a la taille maximale");
-		error = RECEIVE_ERROR; // La trame reçue n'a pas la bonne taille
+		error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
 	}
 	else
 	{
