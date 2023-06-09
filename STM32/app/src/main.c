@@ -59,6 +59,7 @@ int main()
 		if((curtime%1000)==0 && error==0)//send every 1000ms
 		{
 			//error=APP_SACS_send(frame);
+			my_printf("Debut de la reception\r\n");
 			error=APP_SACS_receive(&frame,timeOut);
 		}else if(error!=0)
 		{
