@@ -19,6 +19,9 @@ int controllerMain(void) {
 		/* Send LED_TOGGLE packet */
 		if(APP_SACS_send(packetLed) != SEND_OK)
 		{
+			#if DEBUG
+				my_printf("Send ERROR\r\n");
+			#endif
 			return SEND_ERROR;
 		} else {
 			#if DEBUG

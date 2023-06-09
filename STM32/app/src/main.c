@@ -35,9 +35,73 @@ int main()
 	//setup SX1272
 	APP_SX1272_setup();
 
+	// variables code controller
+	frameSACS_s receivedPacket;
+	uint8_t receiveStatus;
+	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, {LED_TOGGLE}, 0};
+	
+	if(APP_SACS_send(packetLed) == SEND_OK)
+	{
+		my_printf("Send test OK\r\n");
+	} else {
+		my_printf("Send test ERROR\r\n");
+	}
+
+	/* Code controller */
 	while(1)
 	{
-		controllerMain();
+		/* Send LED_TOGGLE packet */
+		if(APP_SACS_send(packetLed) != SEND_OK)
+		{
+			#if DEBUG
+				my_printf("Send ERROR\r\n");
+			#endif
+			//return SEND_ERROR;
+		} else {
+			#if DEBUG
+				my_printf("Send OK\r\n");
+			#endif
+		}
+
+		/* Receive data from subordinate */
+/*
+		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
+		switch (receiveStatus)
+		{
+		case RECEIVE_OK:
+			#if DEBUG
+				my_printf("Receive OK\r\n");
+			#endif
+			break;
+		case RECEIVE_ERROR:
+			#if DEBUG
+				my_printf("Receive ERROR\r\n");
+			#endif
+			break;
+		case RECEIVE_COMMANND_NOT_EXECUTED:
+			#if DEBUG
+				my_printf("Command not executed\r\n");
+			#endif
+			break;
+		case CRC_ERROR:
+			#if DEBUG
+				my_printf("CRC ERROR\r\n");
+			#endif
+			break;
+
+		default:
+			#if DEBUG
+				my_printf("Unmanaged receive ERROR\r\n");
+			#endif
+			break;
+		}
+*/
+
+		//processDataController(&receivedPacket);
+
+		/* Wait for a second and blink LED */
+		BSP_DELAY_ms(600);
+		shortBlink(1);
 	}
 }
 
