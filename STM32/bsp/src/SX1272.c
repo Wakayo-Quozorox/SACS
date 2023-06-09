@@ -2893,11 +2893,14 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
 {
 	uint8_t state = 2;
 	uint8_t state_f = 2;
+	uint8_t st0 = 0;
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
 		my_printf("Starting 'receivePacketTimeout'\r\n");
 	#endif
+	// Save the previous status
+	st0 = BSP_SX1272_Read(REG_OP_MODE);
 
 	// set RX mode
 	state = BSP_SX1272_receive();
@@ -2920,6 +2923,9 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
 	{
 		state_f = state;
 	}
+
+	BSP_SX1272_Write(REG_OP_MODE, st0);	// Getting back to previous status
+
 	return state_f;
 }
 

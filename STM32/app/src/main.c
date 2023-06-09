@@ -64,7 +64,7 @@ int main()
 		}
 
 		/* Receive data from subordinate */
-/*
+
 		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{
@@ -95,7 +95,7 @@ int main()
 			#endif
 			break;
 		}
-*/
+
 
 		//processDataController(&receivedPacket);
 
