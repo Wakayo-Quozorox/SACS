@@ -16,19 +16,22 @@
 
 static void SystemClock_Config();
 
-#define RECEIVE_TIMEOUT 	100
+#define RECEIVE_TIMEOUT 	10000
 #define LED_PACKET_SIZE		1
 
-int subordonneMain(void) {
-	uint32_t curtime = 0;
-	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, LED_TOGGLE, 0};
+int subordonneMain(void)
+{
+	frameSACS_s packetLed = {CID, ACK, LED_PACKET_SIZE, {LED_TOGGLE}, 0};
 	frameSACS_s receivedPacket;
 	uint8_t receiveStatus;
+	uint8_t sendStatus;
+
+    BSP_LED_Init();
 
 	while(1)
 	{
         /* Receive data from controller */
-		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
+		receiveStatus = APP_SACS_receiveSub(&receivedPacket, RECEIVE_TIMEOUT, SID);
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
@@ -50,10 +53,6 @@ int subordonneMain(void) {
                     BSP_LED_Toggle();
 					packetLed.ack = ACK;
                     break;
-				/*default:
-					Incorrect value
-					packetLed.ack = NACK;
-					*/
             }
 			break;
 
@@ -62,6 +61,33 @@ int subordonneMain(void) {
 				my_printf("Receive ERROR\r\n");
 			#endif
             packetLed.ack = NACK;
+			break;
+
+		case RECEIVE_FAILED:
+			#if DEBUG
+				my_printf("Receive FAIL\r\n");
+			#endif
+			packetLed.ack = NACK;
+			break;
+
+		case CRC_ERROR :
+			#if DEBUG
+				my_printf("CRC ERROR\r\n");
+			#endif
+			packetLed.ack = NACK;
+			break;
+
+		case SIZE_ERROR :
+			#if DEBUG
+				my_printf("SIZE ERROR\r\n");
+			#endif
+			packetLed.ack = NACK;
+			break;
+
+		case RECEIVE_SUB_NC :
+			#if DEBUG
+				my_printf("Receive but not for me\r\n");
+			#endif
 			break;
 
 		default:
@@ -73,13 +99,16 @@ int subordonneMain(void) {
 		}
 
 		/* Send ACK packet */
-		if(APP_SACS_send(packetLed) != SEND_OK)
+		sendStatus = APP_SACS_send(packetLed);
+		if(sendStatus != SEND_OK)
 		{
 			#if DEBUG
 				my_printf("Send ERROR\r\n");
 			#endif
 			return SEND_ERROR;
-		} else {
+		}
+		else
+		{
 			#if DEBUG
 				my_printf("Send OK\r\n");
 			#endif

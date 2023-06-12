@@ -9,10 +9,11 @@
 
 #include "appSACS.h"
 
-#define SID1		0x03
-#define LED_ON		0x11
-#define LED_OFF		0x10
-#define LED_TOGGLE	0x12
+#define CID			0x00 	/* Id du contrôleur */
+#define SID			0x03	/* Id du subordonné */
+#define LED_ON		0x11	/* Message de commande d'allumage de la led */
+#define LED_OFF		0x10	/* Message de commande d'extinction de la led */
+#define LED_TOGGLE	0x12	/* Message de commande de toggle de la led */
 
 /* temporaire, à intégrer dans appSACS.h */
 #define MAX_DATA_SIZE    16
