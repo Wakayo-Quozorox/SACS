@@ -26,6 +26,22 @@ int subordonneMain(void)
 	uint8_t receiveStatus;
 	uint8_t sendStatus;
 
+	// Initialize System clock to 48MHz from external clock
+	SystemClock_Config();
+	// Initialize timebase
+	BSP_TIMER_Timebase_Init();
+	// Initialize NVIC
+	BSP_NVIC_Init();
+	// Initialize SPI interface
+	BSP_SPI1_Init();
+	// Initialize Debug Console
+	BSP_Console_Init();
+
+	my_printf("Console ready!\r\n");
+
+	///////////////////////////////////////////
+	//setup SX1272
+	APP_SX1272_setup();
     BSP_LED_Init();
 
 	while(1)
@@ -120,22 +136,10 @@ int subordonneMain(void)
 
 int main()
 {
-//	uint32_t curtime=0;
-//	frameSACS_s frame;
-//	frame.data[0]=0b01100110; //f
-//	frame.data[1]=0b01110010; //r
-//	frame.data[2]=0b01100001; //a
-//	frame.data[3]=0b01101101; //m
-//	frame.data[4]=0b01100010; //b
-//	frame.data[5]=0b01101111; //o
-//	frame.data[6]=0b01101001; //i
-//	frame.data[7]=0b01110011; //s
-//	frame.data[8]=0b01100101; //e
-//	frame.sizeData = 9;
-//	frame.sid = 0;
-//	frame.ack = 1;
-//	uint8_t error = 0;
-//	uint32_t timeOut = 1000;
+	frameSACS_s packetLed = {CID, ACK, LED_PACKET_SIZE, {LED_TOGGLE}, 0};
+	frameSACS_s receivedPacket;
+	uint8_t receiveStatus;
+	uint8_t sendStatus;
 
 	// Initialize System clock to 48MHz from external clock
 	SystemClock_Config();
@@ -153,8 +157,96 @@ int main()
 	///////////////////////////////////////////
 	//setup SX1272
 	APP_SX1272_setup();
+    BSP_LED_Init();
 
-	subordonneMain();
+	while(1)
+	{
+        /* Receive data from controller */
+		receiveStatus = APP_SACS_receiveSub(&receivedPacket, RECEIVE_TIMEOUT, SID);
+		switch (receiveStatus)
+		{
+		case RECEIVE_OK:
+			#if DEBUG
+				my_printf("Receive OK\r\n");
+			#endif
+			/* Verification de l'action à réaliser */
+            switch (receivedPacket.data[0]);
+            {
+                case LED_ON:
+                    BSP_LED_On();
+					packetLed.ack = ACK;
+                    break;
+                case LED_OFF:
+                    BSP_LED_Off();
+					packetLed.ack = ACK;
+                    break;
+                case LED_TOGGLE:
+                    BSP_LED_Toggle();
+					packetLed.ack = ACK;
+                    break;
+            }
+			break;
+
+		case RECEIVE_ERROR:
+			#if DEBUG
+				my_printf("Receive ERROR\r\n");
+			#endif
+            packetLed.ack = NACK;
+			break;
+
+		case RECEIVE_FAILED:
+			#if DEBUG
+				my_printf("Receive FAIL\r\n");
+			#endif
+			packetLed.ack = NACK;
+			break;
+
+		case CRC_ERROR :
+			#if DEBUG
+				my_printf("CRC ERROR\r\n");
+			#endif
+			packetLed.ack = NACK;
+			break;
+
+		case SIZE_ERROR :
+			#if DEBUG
+				my_printf("SIZE ERROR\r\n");
+			#endif
+			packetLed.ack = NACK;
+			break;
+
+		case RECEIVE_SUB_NC :
+			#if DEBUG
+				my_printf("Receive but not for me\r\n");
+			#endif
+			break;
+
+		default:
+			#if DEBUG
+				my_printf("Unmanaged receive error\r\n");
+			#endif
+            packetLed.ack = NACK;
+			break;
+		}
+
+		/* Send ACK packet */
+		sendStatus = APP_SACS_send(packetLed);
+		if(sendStatus != SEND_OK)
+		{
+			#if DEBUG
+				my_printf("Send ERROR\r\n");
+			#endif
+			return SEND_ERROR;
+		}
+		else
+		{
+			#if DEBUG
+				my_printf("Send OK\r\n");
+			#endif
+		}
+	}
+	/* Should never go there */
+	return EXIT_FAILURE;
 }
 
 /*

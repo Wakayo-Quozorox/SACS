@@ -1,12 +1,14 @@
 /*
  * main.h
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 
 #ifndef APP_INC_MAIN_H_
 #define APP_INC_MAIN_H_
+
+#define DEBUG 1
 
 /*
  * printf() and sprintf() from printf-stdarg.c
