@@ -27,6 +27,8 @@
 #define SIZE_ERROR        4 // Code d'erreur: La taille de la trame depasse la taille maximale
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 #define CRC_OK			  0 // CRC ok
+
+#define REVEICE_SUB_NC    5 // Code status: Reception d'une trame non adressé au subordonné
 #define RECEIVE_FAILED	  2 // Code d'erreur: La commande n'a pas ete executee
 #define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
 #define RECEIVE_OK	      0 // Reception ok
@@ -58,7 +60,7 @@ typedef struct frameSACS_s {
 //			- 2 si la commande n'a pas été executée
 uint8_t APP_SACS_send(frameSACS_s frame);
 
-// Fonction qui envoie une trame SACS
+// Fonction qui recoit une trame SACS
 // où frame est une structure contenant les paramètres de la trame
 // et timeOut est le temps limite pour que la commande s'execute.
 // Renvoie: - 0 si tout est OK
