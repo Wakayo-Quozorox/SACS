@@ -193,3 +193,13 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 	return;
 }
 
+uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut)
+{
+	uint8_t error = 0;
+
+	error = APP_SACS_receive(frame,timeOut);
+
+	return error;
+
+}
+
