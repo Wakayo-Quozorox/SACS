@@ -10,11 +10,19 @@
 
 #include "SX1272.h"
 
+/* Addresses */
+#define CONTROLLER_ID		0b000
 /* SID defines */
-#define SID1				0x03
+#define SID1				0b001
+#define SID2				0b010
+#define SID3				0b011
+#define SID4				0b100
+#define SID5				0b101
+#define SID6				0b110
+
 /* LED operations */
-#define LED_ON				0x11
 #define LED_OFF				0x10
+#define LED_ON				0x11
 #define LED_TOGGLE			0x12
 #define LED_PACKET_SIZE		1
 
@@ -27,7 +35,7 @@
 #define RECEIVE_ERROR		1
 #define RECEIVE_COMMANND_NOT_EXECUTED	2
 #define CRC_ERROR	   		3
-#define RECEIVE_TIMEOUT 	100
+#define RECEIVE_TIMEOUT 	3000
 
 /* ACK relative defines */
 #define ACK             	1

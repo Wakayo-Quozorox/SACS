@@ -8,28 +8,27 @@
 #include "controller.h"
 
 int controllerMain(void) {
-	frameSACS_s packetLed = {SID1, ACK, LED_PACKET_SIZE, {LED_TOGGLE}, 0};
-	frameSACS_s receivedPacket;
+	frameSACS_s packetLed = {SID3, ACK, LED_PACKET_SIZE, {LED_ON}, 0};
+	frameSACS_s receivedPacket = {0};
 	uint8_t receiveStatus;
-
-	BSP_LED_Init();
 
 	while(1)
 	{
 		/* Send LED_TOGGLE packet */
 		if(APP_SACS_send(packetLed) != SEND_OK)
 		{
-			#if DEBUG
+			#if CONTROLLER_DEBUG
 				my_printf("Send ERROR\r\n");
 			#endif
-			return SEND_ERROR;
+			//return SEND_ERROR;
 		} else {
-			#if DEBUG
+			#if CONTROLLER_DEBUG
 				my_printf("Send OK\r\n");
 			#endif
 		}
 
 		/* Receive data from subordinate */
+
 		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{
@@ -37,6 +36,10 @@ int controllerMain(void) {
 			#if DEBUG
 				my_printf("Receive OK\r\n");
 			#endif
+			if (receivedPacket.data[0] == packetLed.data[0] && receivedPacket.ack == ACK)
+			{
+				my_printf("Good packet received\r\n");
+			}
 			break;
 		case RECEIVE_ERROR:
 			#if DEBUG
@@ -61,37 +64,9 @@ int controllerMain(void) {
 			break;
 		}
 
-		processDataController(&receivedPacket);
-
-		/* Wait for a second and blink LED */
-		BSP_DELAY_ms(600);
-		shortBlink(1);
-		
+		BSP_DELAY_ms(5000);
 	}
 
 	/* Should never go there */
 	return EXIT_FAILURE;
 }
-
-int processDataController(frameSACS_s *toProcess) {
-	#if DEBUG
-		my_printf("Data received:\r\n");
-		for (int i = 0; i < MAX_DATA_SIZE; ++i)
-		{
-			my_printf("%d\r\n", toProcess->data[i]);
-		}
-	#endif
-
-	/* Cette portion n'est valide que pour l'exemple de la LED simple
-	 * Il faudra l'adapter si on modifie les échanges
-	 */
-	if(toProcess->data[0] == LED_TOGGLE)
-	{
-		shortBlink(3);
-		return EXIT_SUCCESS;
-	} else {
-		longBlink(1);
-		return EXIT_FAILURE;
-	}
-}
-

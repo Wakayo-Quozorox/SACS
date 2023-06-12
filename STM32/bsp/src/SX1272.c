@@ -2893,6 +2893,17 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
 {
 	uint8_t state = 2;
 	uint8_t state_f = 2;
+	
+	if( currentstate._modem == FSK )
+	{
+		BSP_SX1272_setLORA();		  		// Setting LoRa mode
+	}
+	else
+	{
+		/// LoRa mode
+		// LoRa standby mode
+		BSP_SX1272_Write(REG_OP_MODE, LORA_STANDBY_MODE);
+	}
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
