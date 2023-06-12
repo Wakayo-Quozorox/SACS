@@ -27,8 +27,6 @@ int subordonneMain(void) {
 
 	while(1)
 	{
-		BSP_LED_Init();
-
         /* Receive data from controller */
 		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
 		switch (receiveStatus)
@@ -127,17 +125,6 @@ int main()
 	//setup SX1272
 	APP_SX1272_setup();
 
-	// while(1)
-	// {
-	// 	curtime=BSP_millis();
-
-	// 	if((curtime%1000)==0)//send every 1000ms
-	// 	{
-	// 		APP_SX1272_runTransmit();
-	// 		//APP_SX1272_runReceive();
-	// 		i++;
-	// 	}
-	// }
 	subordonneMain();
 }
 
@@ -149,7 +136,6 @@ int main()
  *
  *  Laurent Latorre - 05/08/2017
  */
-
 static void SystemClock_Config()
 {
 	uint32_t	HSE_Status;
