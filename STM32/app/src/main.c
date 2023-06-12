@@ -44,8 +44,29 @@ int main()
 	BSP_SPI1_Init();
 	// Initialize Debug Console
 	BSP_Console_Init();
+	// Initialize RTC clock
+	BSP_RTC_Clock_Config();
 
 	my_printf("Console ready!\r\n");
+
+	//Set RTC
+	time_t		now;
+
+    // If this is a Power ON reset
+	if ( (RCC->CSR & RCC_CSR_PORRSTF_Msk) == RCC_CSR_PORRSTF )
+	{
+		// Setup RTC clock
+		BSP_RTC_Clock_Config();
+
+		// Setup RTC time to 12:00:00
+		now.hours   = 00;
+		now.minutes = 00;
+		now.seconds = 00;
+		BSP_RTC_SetTime(&now);
+	}
+
+	// Clear reset flags for next reset
+	RCC->CSR |= RCC_CSR_RMVF;
 
 	///////////////////////////////////////////
 	//setup SX1272
@@ -149,14 +170,13 @@ static void SystemClock_Config()
 
 	/*--- Use PA8 as MCO output at 48/16 = 3MHz ---*/
 
-	// Set MCO source as SYSCLK (48MHz)
+	// Set MCO source as LSE
 	RCC->CFGR &= ~RCC_CFGR_MCO_Msk;
-	RCC->CFGR |=  RCC_CFGR_MCOSEL_SYSCLK;
+	RCC->CFGR |=  RCC_CFGR_MCOSEL_LSE;     // Change here
 
-	// Set MCO prescaler to /16 -> 3MHz
+	// No prescaler
 	RCC->CFGR &= ~RCC_CFGR_MCOPRE_Msk;
-	RCC->CFGR |=  RCC_CFGR_MCOPRE_DIV16;
-
+	
 	// Enable GPIOA clock
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
 
