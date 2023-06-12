@@ -194,15 +194,16 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 	return;
 }
 
-// Fonction qui recoit une trame SACS et vérifie l'ID subordonné
+// Fonction qui recoit une trame SACS et verifie l'ID subordonne
 // où frame est une structure contenant les paramètres de la trame
-// et timeOut est le temps limite pour que la commande s'execute.
+// timeOut est le temps limite pour que la commande s'execute
+// et subId est l'identifiant du subordonne
 // Renvoie: - 0 si tout est OK
 //   		- 1 si erreur pendant l'execution de la commande
 //			- 2 si la commande n'a pas été executee
-//          - 3 Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
+//          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 //          - 4 La taille de la trame recue est superieur a la taille maximale
-//          - 5 La trame recue n'est pas attribuée au subordonné
+//          - 5 La trame recue n'est pas attribuee au subordonne
 uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId)
 {
 	uint8_t status = 0;
@@ -210,12 +211,12 @@ uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId
 
 	status = APP_SACS_receive(&frameReceive,timeOut);
 
-	if (status != RECEIVE_OK) // Erreur de réception par le subordonné
+	if (status != RECEIVE_OK) // Erreur de reception par le subordonne
 	{
 		my_printf("Problème de réception par le subordonné");
 	}else
 	{
-		if(frameReceive.sid == subId) // Le subordonné est concerné par la trame reçue
+		if(frameReceive.sid == subId) // Le subordonne est concerne par la trame reçue
 		{
 			frame->sid      = frameReceive.sid;
 			frame->ack      = frameReceive.ack;
@@ -223,7 +224,7 @@ uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId
 			for(int i = 0; i<frame->sizeData ; i++)
 				frame->data[i] = frameReceive.data[i];
 			frame->crc      = frameReceive.crc;
-		}else // La trame n'est pas attribuée au subordonné
+		}else // La trame n'est pas attribuee au subordonne
 		{
 			status = REVEICE_SUB_NC;
 		}
