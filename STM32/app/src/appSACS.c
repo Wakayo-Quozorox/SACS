@@ -80,7 +80,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
     else // on continue
     {
 		sizePayload = currentstate._payloadlength;  // Taille totale de la payload
-		if (sizePayload >= MAX_SIZE_PAYLOAD) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
+		if (sizePayload >= MAX_PAYLOAD_SIZE) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
 		{
 			my_printf("La taille de la trame reçue est superieure a la taille maximale");
 			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
@@ -149,7 +149,7 @@ uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC)
 
     // Parcours de chaque bit de l'octet
     for (uint8_t j = 0; j < BYTE_SIZE; j++) {
-      if (crc & MASK_MSB) // Vérifie si le bit de poids le plus élevé est à 1
+      if (crc & MASK_CRC_MSB) // Vérifie si le bit de poids le plus élevé est à 1
         crc = (crc << 1) ^ CRC16_POLY; // Décalage du CRC vers la gauche et XOR avec le polynôme
       else
         crc <<= 1; // Décalage du CRC vers la gauche
