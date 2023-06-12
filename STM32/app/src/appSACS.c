@@ -58,13 +58,14 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	return error;
 }
 
-// Fonction qui envoie une trame SACS
-// où frame est une structure contenant les paramètres de la trame
+// Fonction qui recoit une trame SACS
+// où frame est une structure contenant les parametres de la trame
 // et timeOut est le temps limite pour que la commande s'execute.
 // Renvoie: - 0 si tout est OK
 //   		- 1 si erreur pendant l'execution de la commande
 //			- 2 si la commande n'a pas été executee
-//          - 3 Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
+//          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
+//          - 4 La taille de la trame recue est superieur a la taille maximaale
 uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 {
 	uint8_t error = 0;
@@ -191,5 +192,46 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 	payload[size - (NB_BYTE_AFTER_DATA-1)] = (uint8_t)(crc & MASK_RST_MSBYTE); // Extraction du octet de poids faible (bits 0 à 7)
 
 	return;
+}
+
+// Fonction qui recoit une trame SACS et verifie l'ID subordonne
+// où frame est une structure contenant les paramètres de la trame
+// timeOut est le temps limite pour que la commande s'execute
+// et subId est l'identifiant du subordonne
+// Renvoie: - 0 si tout est OK
+//   		- 1 si erreur pendant l'execution de la commande
+//			- 2 si la commande n'a pas été executee
+//          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
+//          - 4 La taille de la trame recue est superieur a la taille maximale
+//          - 5 La trame recue n'est pas attribuee au subordonne
+uint8_t APP_SACS_receiveSub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId)
+{
+	uint8_t status = 0;
+	frameSACS_s frameReceive;
+
+	status = APP_SACS_receive(&frameReceive,timeOut);
+
+	if (status != RECEIVE_OK) // Erreur de reception par le subordonne
+	{
+		my_printf("Problème de réception par le subordonné: ");
+		my_printf("error %d \n\r",status);
+	}else
+	{
+		if(frameReceive.sid == subId) // Le subordonne est concerne par la trame reçue
+		{
+			frame->sid      = frameReceive.sid;
+			frame->ack      = frameReceive.ack;
+			frame->sizeData = frameReceive.sizeData;
+			for(int i = 0; i<frame->sizeData ; i++)
+				frame->data[i] = frameReceive.data[i];
+			frame->crc      = frameReceive.crc;
+		}else // La trame n'est pas attribuee au subordonne
+		{
+			status = RECEIVE_SUB_NC;
+		}
+	}
+
+	return status;
+
 }
 
