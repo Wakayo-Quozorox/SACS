@@ -107,19 +107,19 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
 			{
 				// SID //
-				frame->sid = payload[1]>>SHIFT_SID;
+				frame->sid = payload[INDEX_BYTE_PARAM]>>SHIFT_SID && MASK_SID;
 
 				// ACKNOWLEDGE //
-				frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
+				frame->ack = payload[INDEX_BYTE_PARAM]>>SHIFT_ACK && MASK_ACKNOLEDGE;
 
 				// SIZE DATA //
-				frame->sizeData = sizePayload-(NB_BYTE_BEFORE_DATA+NB_BYTE_AFTER_DATA);
+				frame->sizeData = payload[INDEX_BYTE_PARAM] && MASK_SIZE_DATA;
 
 				// DATA //
 				my_printf("\n\r");
 				my_printf("DONNEE: ");
 
-				for(int i = 2; i<frame->sizeData+2; i++)
+				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
 				{
 					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
 					my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);

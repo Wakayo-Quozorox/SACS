@@ -23,6 +23,7 @@
 #define NB_BYTE_PARAM     1 // Nombre d'octet des parametres de la donnee
 #define NB_BYTE_BEFORE_DATA (NB_BYTE_SOF+NB_BYTE_PARAM) // Nombre d'octet avant la donnee
 #define NB_BYTE_AFTER_DATA  (NB_BYTE_CRC+NB_BYTE_EOF)   // Nombre d'octet apres la donnee
+#define INDEX_BYTE_PARAM  1 // Indice de l'octect des parametres de la trame
 
 #define SIZE_ERROR        4 // Code d'erreur: La taille de la trame depasse la taille maximale
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
@@ -42,7 +43,9 @@
 #define CRC16_POLY      0x1021      // Polynôme CRC-16-CCITT
 
 #define MASK_CRC_MSB	0x8000      // Masque CRC bit de poids fort
+#define MASK_SID        0b00000111  // Masque des bits de l'identifiant du subordonne
 #define MASK_ACKNOLEDGE 0b00000001  // Masque bit d'acknowledge
+#define MASK_SIZE_DATA  0b00001111  // Masque des bits de la taille des donnees
 #define MASK_RST_MSBYTE 0xFF        // Masque Mise à zéro des bits de poids fort
 
 typedef struct frameSACS_s {
