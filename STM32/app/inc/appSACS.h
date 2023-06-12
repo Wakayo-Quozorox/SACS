@@ -28,7 +28,7 @@
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 #define CRC_OK			  0 // CRC ok
 
-#define REVEICE_SUB_NC    5 // Code status: Reception d'une trame non adressé au subordonné
+#define RECEIVE_SUB_NC    5 // Code status: Reception d'une trame non adressé au subordonné
 #define RECEIVE_FAILED	  2 // Code d'erreur: La commande n'a pas ete executee
 #define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
 #define RECEIVE_OK	      0 // Reception ok
@@ -94,6 +94,6 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size);
 //          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 //          - 4 La taille de la trame recue est superieur a la taille maximale
 //          - 5 La trame recue n'est pas attribuee au subordonne
-uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId);
+uint8_t APP_SACS_receiveSub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId);
 
 #endif /* APP_INC_APPSACS_H_ */

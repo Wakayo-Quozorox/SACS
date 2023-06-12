@@ -204,7 +204,7 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 //          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 //          - 4 La taille de la trame recue est superieur a la taille maximale
 //          - 5 La trame recue n'est pas attribuee au subordonne
-uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId)
+uint8_t APP_SACS_receiveSub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId)
 {
 	uint8_t status = 0;
 	frameSACS_s frameReceive;
@@ -213,7 +213,8 @@ uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId
 
 	if (status != RECEIVE_OK) // Erreur de reception par le subordonne
 	{
-		my_printf("Problème de réception par le subordonné");
+		my_printf("Problème de réception par le subordonné: ");
+		my_printf("error %d \n\r",status);
 	}else
 	{
 		if(frameReceive.sid == subId) // Le subordonne est concerne par la trame reçue
@@ -226,7 +227,7 @@ uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId
 			frame->crc      = frameReceive.crc;
 		}else // La trame n'est pas attribuee au subordonne
 		{
-			status = REVEICE_SUB_NC;
+			status = RECEIVE_SUB_NC;
 		}
 	}
 
