@@ -193,3 +193,9 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 	return;
 }
 
+
+uint8_t APP_SAC_test_receive(void)
+{
+	uint8_t status = 0;
+
+}
