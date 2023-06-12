@@ -84,4 +84,16 @@ uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size);
 // Met a jour la trame avec le CRC correspondant
 void APP_SACS_setCRC(uint8_t *payload, uint8_t size);
 
+// Fonction qui recoit une trame SACS et verifie l'ID subordonne
+// où frame est une structure contenant les paramètres de la trame
+// timeOut est le temps limite pour que la commande s'execute
+// et subId est l'identifiant du subordonne
+// Renvoie: - 0 si tout est OK
+//   		- 1 si erreur pendant l'execution de la commande
+//			- 2 si la commande n'a pas été executee
+//          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
+//          - 4 La taille de la trame recue est superieur a la taille maximale
+//          - 5 La trame recue n'est pas attribuee au subordonne
+uint8_t APP_SACS_receive_sub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId);
+
 #endif /* APP_INC_APPSACS_H_ */
