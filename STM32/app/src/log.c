@@ -11,7 +11,7 @@ fclose(log);
 }
 }
 
-void add_log_input ()
+void add_log_input (string evenement)
 {
     
 }
