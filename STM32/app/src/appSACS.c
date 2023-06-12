@@ -58,9 +58,6 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	return error;
 }
 
-///////////////////////////////////////////////////////////////
-// Reception de la trame
-///////////////////////////////////////////////////////////////
 // Fonction qui envoie une trame SACS
 // où frame est une structure contenant les paramètres de la trame
 // et timeOut est le temps limite pour que la commande s'execute.
@@ -74,50 +71,70 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 	uint8_t sizePayload = 0;
 	uint8_t payload[MAX_PAYLOAD_SIZE] = {0};
 
-    error = BSP_SX1272_receivePacketTimeout(timeOut);
 
-    if (error == 0){ // La reception a été effectuee
-    	sizePayload = currentstate._payloadlength;  // taille totale de la payload
-        // Remplissage de la payload avec les donnees recues
-        my_printf("\n\r");
-        my_printf("TRAME: ");
-        for(uint8_t i = 0; i<sizePayload; i++)
-        {
-        	payload[i] = currentstate.packet_received.data[i];
-        	my_printf("%x",payload[i]);
-        	my_printf(" ");
-        }
-
-        // Remplissage de la structure frame
-        // SID //
-        frame->sid = payload[1]>>SHIFT_SID;
-
-        // ACKNOWLEDGE //
-        frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
-
-        // SIZE DATA //
-        frame->sizeData = sizePayload-(NB_BYTE_BEFORE_DATA+NB_BYTE_AFTER_DATA);
-
-        // DATA //
-        my_printf("\n\r");
-        my_printf("DONNEE: ");
-        for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
-        {
-        	frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
-        	my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
-        }
-        my_printf("\n\r");
-        // CRC //
-        frame->crc = (uint16_t)payload[sizePayload - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[sizePayload - (NB_BYTE_AFTER_DATA-1)];
-        error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
-    }else
+    error = BSP_SX1272_receivePacketTimeout(timeOut); // Réceptionne tout ce qui passe avec un timeout
+    if (error != RECEIVE_OK)
     {
-    	my_printf("Reception Error\r\n");
+    	my_printf("Problème de réception");
+    }
+    else // on continue
+    {
+		sizePayload = currentstate._payloadlength;  // Taille totale de la payload
+		if (sizePayload >= MAX_SIZE_PAYLOAD) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
+		{
+			my_printf("La taille de la trame reçue est superieure a la taille maximale");
+			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
+		}
+		else // on continue
+		{
+			my_printf("\n\r");
+			my_printf("TRAME: ");
+
+			for(uint8_t i = 0; i<sizePayload; i++) // Remplissage de la payload avec les donnees recues
+			{
+				payload[i] = currentstate.packet_received.data[i];
+				my_printf("%x",payload[i]);
+				my_printf(" ");
+			}
+
+			error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
+
+			if (error != RECEIVE_OK)  // Les données sont invalides
+			{
+				my_printf("CRC invalide, trame ignorée !\r\n");
+			}
+			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
+			{
+				// SID //
+				frame->sid = payload[1]>>SHIFT_SID;
+
+				// ACKNOWLEDGE //
+				frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
+
+				// SIZE DATA //
+				frame->sizeData = sizePayload-(NB_BYTE_BEFORE_DATA+NB_BYTE_AFTER_DATA);
+
+				// DATA //
+				my_printf("\n\r");
+				my_printf("DONNEE: ");
+
+				for(int i = 2; i<frame->sizeData+2; i++)
+				{
+					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
+					my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
+				}
+				my_printf("\n\r");
+
+				// CRC //
+				frame->crc = (uint16_t)payload[sizePayload - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[sizePayload - (NB_BYTE_AFTER_DATA-1)];
+        error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
+			}
+		}
     }
 
 	return error;
-
 }
+
 // Fonction qui calcule le CRC avec le Polynôme CRC-16-CCITT
 // où payload est la trame sous forme de tableau et sizeCRC est la taille du tableau à checker
 // Renvoie les 16bits du CRC dans un uint16_t
