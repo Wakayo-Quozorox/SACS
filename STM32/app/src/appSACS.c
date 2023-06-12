@@ -132,7 +132,7 @@ uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC)
 
     // Parcours de chaque bit de l'octet
     for (uint8_t j = 0; j < BYTE_SIZE; j++) {
-      if (crc & MASK_MSB) // Vérifie si le bit de poids le plus élevé est à 1
+      if (crc & MASK_CRC_MSB) // Vérifie si le bit de poids le plus élevé est à 1
         crc = (crc << 1) ^ CRC16_POLY; // Décalage du CRC vers la gauche et XOR avec le polynôme
       else
         crc <<= 1; // Décalage du CRC vers la gauche
