@@ -18,15 +18,16 @@ static void SystemClock_Config();
 int main()
 {
 	uint32_t curtime=0;
-	frameSACS_s frame;
+	frameSACS_s frame;//i
+	frameSACS_s frame2;//i
+	frame.data[7]=0b01110011;
 	frame.data[0]=0b01100110; //f
 	frame.data[1]=0b01110010; //r
 	frame.data[2]=0b01100001; //a
 	frame.data[3]=0b01101101; //m
 	frame.data[4]=0b01100010; //b
 	frame.data[5]=0b01101111; //o
-	frame.data[6]=0b01101001; //i
-	frame.data[7]=0b01110011; //s
+	frame.data[6]=0b01101001;  //s
 	frame.data[8]=0b01100101; //e
 	frame.sizeData = 9;
 	frame.sid = 0;
@@ -56,18 +57,19 @@ int main()
 
 		curtime=BSP_millis();
 
-		if((curtime%1000)==0 && error==0)//send every 1000ms
+		my_printf("Debut de l'emission\r\n");
+		error=APP_SACS_send(frame);
+		if(error!=0)
 		{
-			my_printf("Debut de l'emission\r\n");
-			error=APP_SACS_send(frame);
-			//error=APP_SACS_receive(&frame,timeOut);
-		}else if(error!=0)
+			my_printf("Error in transmit\r\n");
+		}
+		my_printf("Debut de la reception\r\n");
+		error=APP_SACS_receive(&frame2,timeOut);
+		if(error!=0)
 		{
 			my_printf("Error in receiver\r\n");
-		} else
-		{
-			//Default: nothing happens
 		}
+
 	}
 }
 
