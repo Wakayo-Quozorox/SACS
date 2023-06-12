@@ -25,7 +25,7 @@ C_DEPS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 app/src/%.o: ../app/src/%.c app/src/subdir.mk
-	arm-none-eabi-gcc "$<" -mcpu=cortex-m0 -std=gnu11 -g3 -DSTM32F072xB -c -I"C:/Users/hmnz/source/repos/SACS/app/inc" -I"C:/Users/hmnz/source/repos/SACS/cmsis/core" -I"C:/Users/hmnz/source/repos/SACS/cmsis/device/inc" -I"C:/Users/hmnz/source/repos/SACS/bsp/inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m0 -std=gnu11 -g3 -DSTM32F072xB -c -I"C:/Users/hmnz/source/repos/SACS/STM32/app/inc" -I"C:/Users/hmnz/source/repos/SACS/STM32/cmsis/core" -I"C:/Users/hmnz/source/repos/SACS/STM32/cmsis/device/inc" -I"C:/Users/hmnz/source/repos/SACS/STM32/bsp/inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
 
 clean: clean-app-2f-src
 

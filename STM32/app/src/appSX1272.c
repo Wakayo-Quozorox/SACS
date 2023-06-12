@@ -1,7 +1,7 @@
 /*
  * appSX1272.c
  *
- *  Created on: 25 août 2020
+ *  Created on: 25 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -15,7 +15,7 @@
 extern SX1272status currentstate;
 
 ///////////////////////////////////////////////////////////////
-// Déclaration variables globales
+// Dï¿½claration variables globales
 ///////////////////////////////////////////////////////////////
 static char LgMsg = 0;
 static char Message[] = "Salut Francis, comment vas-tu ?";
@@ -75,7 +75,7 @@ void APP_SX1272_setup()
   if (ConfigOK == 1)
   {
 	//////////////////////////////////////////////////////////////////////
-  //config supplémentaire mode LORA
+  //config supplï¿½mentaire mode LORA
 	//////////////////////////////////////////////////////////////////////
     if(type_modulation==0)
     {
@@ -95,7 +95,7 @@ void APP_SX1272_setup()
       currentstate._maxRetries = MaxNbRetries;
     }
 	//////////////////////////////////////////////////////////////////////
-	//config supplémentaire mode FSK
+	//config supplï¿½mentaire mode FSK
 	//////////////////////////////////////////////////////////////////////
     else
     {
@@ -134,105 +134,128 @@ void APP_SX1272_setup()
 
 void APP_SX1272_runTransmit()
 {
-  uint8_t dest_address = TX_Addr;
+	uint8_t dest_address = TX_Addr;
 
-  //////////////////////////////////////////////////////////////////////////////////
-  // Transmit a packet continuously with a pause of "waitPeriod"
-  if (ConfigOK == 1)
-  {
+	//////////////////////////////////////////////////////////////////////////////////
+	// Transmit a packet continuously with a pause of "waitPeriod"
+	if (ConfigOK == 1)
+	{
 
-    LgMsg=strlen(Message);
-    e = BSP_SX1272_sendPacketTimeout(dest_address,Message,WaitTxMax);
+		if( currentstate._modem == FSK )
+		{
+			BSP_SX1272_setLORA();		  		// Setting LoRa mode
+		}
+		else
+		{
+			/// LoRa mode
+			// LoRa standby mode
+			BSP_SX1272_Write(REG_OP_MODE, LORA_STANDBY_MODE);
+		}
 
-    if(type_modulation)
-    {
-      BSP_SX1272_Write(REG_OP_MODE, FSK_STANDBY_MODE); // FSK standby mode to switch off the RF field
-    }
+		LgMsg=strlen(Message);
+		e = BSP_SX1272_sendPacketTimeout(dest_address,Message,WaitTxMax);
 
-    if (e == 0)
-    {
-      my_printf("\n Packet number ");
-      my_printf("%d",cp);
-	  my_printf(" ;Rx node address ");
-	  my_printf("%d\r\n",dest_address);
-      cp++;
-    }
-    else
-    {
-      my_printf("\n Trasmission problem !\r\n");
-    }
-    BSP_DELAY_ms(waitPeriod); //delay to send packet every PeriodTransmission
-  }
+//		if(type_modulation)
+//		{
+//			BSP_SX1272_Write(REG_OP_MODE, FSK_STANDBY_MODE); // FSK standby mode to switch off the RF field
+//		}
+
+		if (e == 0)
+		{
+			my_printf("\n Packet number ");
+			my_printf("%d",cp);
+			my_printf(" ;Rx node address ");
+			my_printf("%d\r\n",dest_address);
+			cp++;
+		}
+		else
+		{
+			my_printf("\n Trasmission problem !\r\n");
+		}
+		BSP_DELAY_ms(waitPeriod); //delay to send packet every PeriodTransmission
+	}
 }
 
 void APP_SX1272_runReceive()
 {
-  char StatusRXMessage='0';
+	char StatusRXMessage='0';
 
-  //////////////////////////////////////////////////////////////////////////////////
-  // Receive packets continuously
-  if (ConfigOK == 1)
-  {
-	    //affichage entête
-	    //statut (correct = 1 or bad = 0 or non received = 2)
-	  my_printf("\n \r\n");
-	  my_printf("Packet status ; Packet number ; Received Lg ; Received data ; RSSI packet (dBm) ; source address; PER (%); BER (%)\r\n");
-	  my_printf("\n \r\n");
+	//////////////////////////////////////////////////////////////////////////////////
+	// Receive packets continuously
+	if (ConfigOK == 1)
+	{
 
-    e = BSP_SX1272_receivePacketTimeout(WaitRxMax);
-    //paquet reçu, correct ou non
-    if (e == 0)
-    {
-      StatusRXMessage = '0';
-      if (currentstate._reception == CORRECT_PACKET)
-      {
-       // Check if the received packet is correct
-       // The length and the content of the packet is checked
-       // if it is valid, the cpok counter is incremented
-       LgMsg=strlen(Message);
-       if(currentstate.packet_received.length>=LgMsg)//check the length
-       {
-        if(memcmp(Message,currentstate.packet_received.data,LgMsg)==0)//check the content
-        {
-          StatusRXMessage = '1';
-        }
-       }
-      }
-    }
-    // RX Timeout !! No packet received
-    else
-    {
-      StatusRXMessage = '2';
-    }
+		if( currentstate._modem == FSK )
+		{
+			BSP_SX1272_setLORA();		  		// Setting LoRa mode
+		}
+		else
+		{
+			/// LoRa mode
+			// LoRa standby mode
+			BSP_SX1272_Write(REG_OP_MODE, LORA_STANDBY_MODE);
+		}
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // Plot receive packets in the serial monitor
-    my_printf("%d",StatusRXMessage);
-    my_printf(" ; ");
-    my_printf("%d",currentstate.packet_received.packnum);
-    my_printf(" ; ");
-    my_printf("%d",currentstate.packet_received.length);
-    my_printf(" ; ");
-    for (uint8_t i =0; i < currentstate.packet_received.length-OFFSET_PAYLOADLENGTH; i++)
-    {
-      my_printf("%c",currentstate.packet_received.data[i]);
-      my_printf(" ");
-    }
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Plot RSSI
-    my_printf(" ; ");
-    // LORA mode
-    if(TypeModulation == 0)
-    {
-      e = BSP_SX1272_getRSSIpacket();
-      my_printf("%d\r\n",currentstate._RSSIpacket);
-    }
-    // FSK mode
-    else
-    {
-      //e = BSP_SX1272_getRSSI() done during RX, no packet RSSI available in FSK mode;
-      //my_printf("%d\r\n",currentstate._RSSI);
-    }
-  }
-  BSP_DELAY_ms(1000);
+		//affichage entï¿½te
+		//statut (correct = 1 or bad = 0 or non received = 2)
+		my_printf("\n \r\n");
+		my_printf("Packet status ; Packet number ; Received Lg ; Received data ; RSSI packet (dBm) ; source address; PER (%); BER (%)\r\n");
+		my_printf("\n \r\n");
+
+		e = BSP_SX1272_receivePacketTimeout(WaitRxMax);
+		//paquet reï¿½u, correct ou non
+		if (e == 0)
+		{
+			StatusRXMessage = '0';
+			if (currentstate._reception == CORRECT_PACKET)
+			{
+				// Check if the received packet is correct
+				// The length and the content of the packet is checked
+				// if it is valid, the cpok counter is incremented
+				LgMsg=strlen(Message);
+				if(currentstate.packet_received.length>=LgMsg)//check the length
+				{
+					if(memcmp(Message,currentstate.packet_received.data,LgMsg)==0)//check the content
+					{
+						StatusRXMessage = '1';
+					}
+				}
+			}
+		}
+		// RX Timeout !! No packet received
+		else
+		{
+			StatusRXMessage = '2';
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////
+		// Plot receive packets in the serial monitor
+		my_printf("%d",StatusRXMessage);
+		my_printf(" ; ");
+		my_printf("%d",currentstate.packet_received.packnum);
+		my_printf(" ; ");
+		my_printf("%d",currentstate.packet_received.length);
+		my_printf(" ; ");
+		for (uint8_t i =0; i < currentstate.packet_received.length-OFFSET_PAYLOADLENGTH; i++)
+		{
+			my_printf("%c",currentstate.packet_received.data[i]);
+			my_printf(" ");
+		}
+		///////////////////////////////////////////////////////////////////////////////////
+		// Plot RSSI
+		my_printf(" ; ");
+		// LORA mode
+		if(TypeModulation == 0)
+		{
+			e = BSP_SX1272_getRSSIpacket();
+			my_printf("%d\r\n",currentstate._RSSIpacket);
+		}
+		// FSK mode
+		else
+		{
+			//e = BSP_SX1272_getRSSI() done during RX, no packet RSSI available in FSK mode;
+			//my_printf("%d\r\n",currentstate._RSSI);
+		}
+	}
+	BSP_DELAY_ms(1000);
 }

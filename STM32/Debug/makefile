@@ -60,8 +60,8 @@ all: main-build
 main-build: prog1Proj.elf secondary-outputs
 
 # Tool invocations
-prog1Proj.elf: $(OBJS) $(USER_OBJS) C:/Users/hmnz/source/repos/SACS/Debug_STM32F072RB_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "prog1Proj.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"C:/Users/hmnz/source/repos/SACS/Debug_STM32F072RB_FLASH.ld" --specs=nosys.specs -Wl,-Map="prog1Proj.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+prog1Proj.elf: $(OBJS) $(USER_OBJS) C:/Users/hmnz/source/repos/SACS/STM32/Debug_STM32F072RB_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "prog1Proj.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"C:/Users/hmnz/source/repos/SACS/STM32/Debug_STM32F072RB_FLASH.ld" --specs=nosys.specs -Wl,-Map="prog1Proj.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
