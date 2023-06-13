@@ -26,14 +26,14 @@ extern	SX1272status currentstate;
 // Renvoie: - 0 si tout est OK
 //   		- 1 si erreur pendant l'execution de la commande
 //			- 2 si la commande n'a pas été executée
-uint8_t APP_SACS_send(frameSACS_s frame)
+uint8_t APP_SACS_send(const frameSACS_s frame)
 {
-	uint8_t dest_address = TX_Addr;
-	uint16_t LgMsg = 0;
-	uint8_t error = 0;
 	// START(1 byte) + ID/ACK/SIZE_DATA (1 byte) + DATA (SIZE_DATA byte) + CRC (2 bytes) + END(1 byte)
-	uint8_t size = NB_BYTE_SOF+NB_BYTE_PARAM+frame.sizeData+NB_BYTE_CRC+NB_BYTE_EOF;
+	const uint8_t size = NB_BYTE_SOF+NB_BYTE_PARAM+frame.sizeData+NB_BYTE_CRC+NB_BYTE_EOF;
+	const uint8_t dest_address = TX_Addr;
 	uint8_t payload[size];
+	uint8_t error = 0;
+	uint16_t LgMsg = 0;
 
 	// START OF FRAME //
 	payload[0] =  START_OF_FRAME; // Sequence of 1 and 0
@@ -69,12 +69,12 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 //			- 2 si la commande n'a pas été executee
 //          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 //          - 4 La taille de la trame recue est superieur a la taille maximaale
-uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
+// Le pointeur ne peut être modifiée mais la variable pointée peut etre modifiée
+uint8_t APP_SACS_receive(frameSACS_s* const frame, const uint32_t timeOut)
 {
 	uint8_t error = 0;
 	uint8_t sizePayload = 0;
 	uint8_t payload[MAX_PAYLOAD_SIZE] = {0};
-
 
     error = BSP_SX1272_receivePacketTimeout(timeOut); // Réceptionne tout ce qui passe avec un timeout
     if (error != RECEIVE_OK)
@@ -90,7 +90,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
 		}
 		else // on continue
-    {
+		{
 			my_printf("\n\r");
 			my_printf("TRAME: ");
 
@@ -127,13 +127,13 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
 				{
 					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
-					my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
+					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);
 				}
 				my_printf("\n\r");
 
 				// CRC //
 				frame->crc = (uint16_t)payload[sizePayload - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[sizePayload - (NB_BYTE_AFTER_DATA-1)];
-        error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
+				error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
 			}
 		}
     }
@@ -145,7 +145,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 // où payload est la trame sous forme de tableau et sizeCRC est la taille du tableau à checker
 // Renvoie les 16bits du CRC dans un uint16_t
 // ** correspond a CRC-CCITT (0xFFFF) sur ce site https://www.lammertbies.nl/comm/info/crc-calculation
-uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC)
+uint16_t APP_SACS_calculateCRC(uint8_t const* const payload, const uint8_t sizeCRC)
 {
   uint16_t crc = INIT_CRC; // CRC initial avec tous les bits à 1 (valeur maximale pour un CRC 16 bits)
 
@@ -168,7 +168,7 @@ uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC)
 // Fonction pour vérifier la validité des données avec le CRC
 // où payload est la trame sous forme de tableau et size est la taille du tableau
 // Renvoie 0 si tout est OK et 1 si erreur
-uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size)
+uint8_t APP_SACS_checkCRC(uint8_t const* const payload, const uint8_t size)
 {
   uint16_t receivedCRC = (uint16_t)payload[size - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[size - (NB_BYTE_AFTER_DATA-1)]; // Récupération du CRC reçu des 2 derniers octets
   uint16_t calculatedCRC = APP_SACS_calculateCRC(payload, size - NB_BYTE_AFTER_DATA); // Calcul du CRC pour les données reçues (sans les 2 octets du CRC et la fin de trame)
@@ -187,7 +187,7 @@ uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size)
 // Fonction qui calcule le CRC a partir de la trame et qui affecte le CRC a la trame (partie CHECK)
 // Prend en entrée la trame et sa taille totale
 // Met a jour la trame avec le CRC correspondant
-void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
+void APP_SACS_setCRC(uint8_t* const payload, const uint8_t size)
 {
 	uint16_t crc = 0;
 
@@ -209,7 +209,7 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size)
 //          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 //          - 4 La taille de la trame recue est superieur a la taille maximale
 //          - 5 La trame recue n'est pas attribuee au subordonne
-uint8_t APP_SACS_receiveSub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId)
+uint8_t APP_SACS_receiveSub(frameSACS_s* const frame, const uint32_t timeOut, const uint8_t subId)
 {
 	uint8_t status = 0;
 	frameSACS_s frameReceive;

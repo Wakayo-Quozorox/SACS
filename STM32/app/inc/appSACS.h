@@ -88,7 +88,7 @@ typedef struct frameSACS_s {
 // Renvoie: - 0 si tout est OK
 //   		- 1 si erreur pendant l'execution de la commande
 //			- 2 si la commande n'a pas été executée
-uint8_t APP_SACS_send(frameSACS_s frame);
+uint8_t APP_SACS_send(const frameSACS_s frame);
 
 // Fonction qui recoit une trame SACS
 // où frame est une structure contenant les paramètres de la trame
@@ -97,22 +97,22 @@ uint8_t APP_SACS_send(frameSACS_s frame);
 //   		- 1 si erreur pendant l'execution de la commande
 //			- 2 si la commande n'a pas été executée
 //          - 3 Le CRC reçu ne correspond pas au CRC calculé, les données sont invalides
-uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut);
+uint8_t APP_SACS_receive(frameSACS_s* const frame, const uint32_t timeOut);
 
 // Fonction qui calcule le CRC avec le Polynôme CRC-16-CCITT
 // où payload est la trame sous forme de tableau et sizeCRC est la taille du tableau à checker
 // Renvoie les 16bits du CRC dans un uint16_t
-uint16_t APP_SACS_calculateCRC(uint8_t *payload, uint8_t sizeCRC);
+uint16_t APP_SACS_calculateCRC(uint8_t const* const payload, const uint8_t sizeCRC);
 
 // Fonction pour vérifier la validité des données avec le CRC
 // où payload est la trame sous forme de tableau et size est la taille du tableau
 // Renvoie 0 si tout est OK et 1 si erreur
-uint8_t APP_SACS_checkCRC(uint8_t *payload, uint8_t size);
+uint8_t APP_SACS_checkCRC(uint8_t const* const payload, const uint8_t size);
 
 // Fonction qui calcule le CRC a partir de la trame et qui affecte le CRC a la trame (partie CHECK)
 // Prend en entrée la trame et sa taille totale
 // Met a jour la trame avec le CRC correspondant
-void APP_SACS_setCRC(uint8_t *payload, uint8_t size);
+void APP_SACS_setCRC(uint8_t* const payload, const uint8_t size);
 
 // Fonction qui recoit une trame SACS et verifie l'ID subordonne
 // où frame est une structure contenant les paramètres de la trame
@@ -124,6 +124,6 @@ void APP_SACS_setCRC(uint8_t *payload, uint8_t size);
 //          - 3 Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 //          - 4 La taille de la trame recue est superieur a la taille maximale
 //          - 5 La trame recue n'est pas attribuee au subordonne
-uint8_t APP_SACS_receiveSub(frameSACS_s* frame, uint32_t timeOut, uint8_t subId);
+uint8_t APP_SACS_receiveSub(frameSACS_s* const frame, const uint32_t timeOut, const uint8_t subId);
 
 #endif /* APP_INC_APPSACS_H_ */
