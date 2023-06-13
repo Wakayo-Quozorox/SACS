@@ -10,7 +10,6 @@
 #include "appSX1272.h"
 #include "SX1272.h"
 #include "comSX1272.h"
-#include "string.h"
 #include "delay.h"
 
 
@@ -54,10 +53,14 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 
     LgMsg=sizeof(payload) / sizeof(payload[0]);
     error = BSP_SX1272_sendPacketTimeout(dest_address,payload,LgMsg,WaitTxMax);
-
+    
 	return error;
 }
 
+
+///////////////////////////////////////////////////////////////
+// Reception de la trame
+///////////////////////////////////////////////////////////////
 // Fonction qui recoit une trame SACS
 // où frame est une structure contenant les parametres de la trame
 // et timeOut est le temps limite pour que la commande s'execute.
@@ -87,7 +90,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
 		}
 		else // on continue
-		{
+    {
 			my_printf("\n\r");
 			my_printf("TRAME: ");
 
@@ -98,6 +101,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				my_printf(" ");
 			}
 
+
 			error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
 
 			if (error != RECEIVE_OK)  // Les données sont invalides
@@ -106,6 +110,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			}
 			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
 			{
+
 				// SID //
 				frame->sid = payload[INDEX_BYTE_PARAM]>>SHIFT_SID & MASK_SID;
 

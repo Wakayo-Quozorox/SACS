@@ -1,7 +1,7 @@
 /*
  * main.h
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 

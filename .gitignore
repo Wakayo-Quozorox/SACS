@@ -58,3 +58,6 @@ dkms.conf
 [Rr]elease
 [Dd]ebug
 .launch
+
+# VS Code
+.vscode/
