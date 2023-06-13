@@ -127,7 +127,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
 				{
 					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
-					my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
+					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);
 				}
 				my_printf("\n\r");
 
