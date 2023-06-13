@@ -104,7 +104,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
         for(int i = 2; i<frame->sizeData+2; i++)
         {
         	frame->data[i-2]=payload[i];
-        	my_printf("%c",frame->data[i-2]);
+        	my_printf("%x",frame->data[i-2]);
         }
         my_printf("\n\r");
         // CRC //
