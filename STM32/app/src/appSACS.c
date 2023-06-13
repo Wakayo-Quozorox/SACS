@@ -75,23 +75,21 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 	uint8_t sizePayload = 0;
 	uint8_t payload[MAX_PAYLOAD_SIZE] = {0};
 
-
     error = BSP_SX1272_receivePacketTimeout(timeOut); // Réceptionne tout ce qui passe avec un timeout
     if (error != RECEIVE_OK)
     {
-    	my_printf("Problème de réception");
+    	my_printf("Problème de réception\n\r");
     }
     else // on continue
     {
 		sizePayload = currentstate._payloadlength;  // Taille totale de la payload
 		if (sizePayload >= MAX_PAYLOAD_SIZE) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
 		{
-			my_printf("La taille de la trame reçue est superieure a la taille maximale");
+			my_printf("La taille de la trame reçue est superieure a la taille maximale \n\r");
 			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
 		}
 		else // on continue
-    {
-			my_printf("\n\r");
+		{
 			my_printf("TRAME: ");
 
 			for(uint8_t i = 0; i<sizePayload; i++) // Remplissage de la payload avec les donnees recues
@@ -100,6 +98,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				my_printf("%x",payload[i]);
 				my_printf(" ");
 			}
+			my_printf("\n\r");
 
 
 			error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
@@ -118,22 +117,21 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				frame->ack = payload[INDEX_BYTE_PARAM]>>SHIFT_ACK & MASK_ACKNOLEDGE;
 
 				// SIZE DATA //
-				frame->sizeData = payload[INDEX_BYTE_PARAM] & MASK_SIZE_DATA;
+				frame->sizeData = (payload[INDEX_BYTE_PARAM] & MASK_SIZE_DATA) + DIFF_DATA_SIZE;
 
 				// DATA //
-				my_printf("\n\r");
 				my_printf("DONNEE: ");
 
-				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
+				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData + NB_BYTE_BEFORE_DATA; i++)
 				{
-					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
-					my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
+					frame->data[i - NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
+					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);
 				}
 				my_printf("\n\r");
 
 				// CRC //
 				frame->crc = (uint16_t)payload[sizePayload - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[sizePayload - (NB_BYTE_AFTER_DATA-1)];
-        error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
+				error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
 			}
 		}
     }
