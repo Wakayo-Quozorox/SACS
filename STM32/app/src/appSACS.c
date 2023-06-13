@@ -10,7 +10,6 @@
 #include "appSX1272.h"
 #include "SX1272.h"
 #include "comSX1272.h"
-#include "string.h"
 #include "delay.h"
 
 
@@ -54,10 +53,14 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 
     LgMsg=sizeof(payload) / sizeof(payload[0]);
     error = BSP_SX1272_sendPacketTimeout(dest_address,payload,LgMsg,WaitTxMax);
-
+    
 	return error;
 }
 
+
+///////////////////////////////////////////////////////////////
+// Reception de la trame
+///////////////////////////////////////////////////////////////
 // Fonction qui recoit une trame SACS
 // où frame est une structure contenant les parametres de la trame
 // et timeOut est le temps limite pour que la commande s'execute.
@@ -97,6 +100,7 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			}
 			my_printf("\n\r");
 
+
 			error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
 
 			if (error != RECEIVE_OK)  // Les données sont invalides
@@ -105,21 +109,20 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			}
 			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
 			{
+
 				// SID //
-				frame->sid = payload[1]>>SHIFT_SID;
-				my_printf("SID : %x \n\r",frame->sid);
+				frame->sid = payload[INDEX_BYTE_PARAM]>>SHIFT_SID & MASK_SID;
+
 				// ACKNOWLEDGE //
-				frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
-				my_printf("ACK : %x \n\r",frame->ack);
+				frame->ack = payload[INDEX_BYTE_PARAM]>>SHIFT_ACK & MASK_ACKNOLEDGE;
 
 				// SIZE DATA //
-				frame->sizeData = sizePayload-(NB_BYTE_BEFORE_DATA+NB_BYTE_AFTER_DATA);
-				my_printf("SIZE DATA : %x \n\r",frame->sizeData);
+				frame->sizeData = payload[INDEX_BYTE_PARAM] & MASK_SIZE_DATA;
 
 				// DATA //
 				my_printf("DONNEE: ");
 
-				for(int i = 2; i<frame->sizeData+2; i++)
+				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
 				{
 					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
 					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);

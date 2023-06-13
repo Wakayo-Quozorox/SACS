@@ -10,9 +10,11 @@
 
 #include "SX1272.h"
 
-#define MAX_DATA_SIZE    16 // Taille de la donnee
-#define MAX_PAYLOAD_SIZE 19 // Taille de la payload
-#define BYTE_SIZE         8 // Octet
+/* DATA management constants */
+#define MAX_DATA_SIZE 		16		// Taille de la donnee
+#define MAX_PAYLOAD_SIZE 	19		// Taille de la payload
+#define BYTE_SIZE 			8		// Octet
+
 
 #define SHIFT_SID         5 // Decalage de sub ID dans l'octet de parametre
 #define SHIFT_ACK         4 // Decalage de l'acknowledge dans l'octet de parametre
@@ -24,6 +26,9 @@
 #define NB_BYTE_BEFORE_DATA (NB_BYTE_SOF+NB_BYTE_PARAM) // Nombre d'octet avant la donnee
 #define NB_BYTE_AFTER_DATA  (NB_BYTE_CRC+NB_BYTE_EOF)   // Nombre d'octet apres la donnee
 
+#define INDEX_BYTE_PARAM  1 // Indice de l'octect des parametres de la trame
+
+
 #define SIZE_ERROR        4 // Code d'erreur: La taille de la trame depasse la taille maximale
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 #define CRC_OK			  0 // CRC ok
@@ -33,18 +38,45 @@
 #define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
 #define RECEIVE_OK	      0 // Reception ok
 
-#define ACK               1 // La donnee est reconnue
-#define NACK              0 // La donnee n'est pas reconnue
+/* ACK relative defines */
+#define ACK             	1	// La donnee est reconnue
+#define NACK            	0	// La donnee n'est pas reconnue
+#define MASK_ACKNOLEDGE 	0b00000001
+
+/* Addresses */
+#define CONTROLLER_ID		0b000
+/* SID defines */
+#define SID1				0b001
+#define SID2				0b010
+#define SID3				0b011
+#define SID4				0b100
+#define SID5				0b101
+#define SID6				0b110
+
+/* LED operations */
+#define LED_OFF				0x10
+#define LED_ON				0x11
+#define LED_TOGGLE			0x12
+#define LED_PACKET_SIZE		1
+
+/* send relative defines */
+#define SEND_ERROR	    	1
+#define SEND_OK		    	0
+
+#define RECEIVE_TIMEOUT 	3000
 
 #define START_OF_FRAME  0b10101010  // Debut de trame: AA
 #define END_OF_FRAME    0b00000000  // Fin de trame:   00
 #define INIT_CRC        0xFFFF      // Initialisation du CRC: tous les bits sont mis à 1
 #define CRC16_POLY      0x1021      // Polynôme CRC-16-CCITT
 
-#define MASK_CRC_MSB	0x8000      // Masque CRC bit de poids fort
 #define MASK_ACKNOLEDGE 0b00000001  // Masque bit d'acknowledge
 #define MASK_RST_MSBYTE 0xFF
 // Masque Mise à zéro des bits de poids fort
+#define MASK_CRC_MSB	0x8000        // Masque CRC bit de poids fort
+#define MASK_SID        0b00000111  // Masque des bits de l'identifiant du subordonne
+#define MASK_SIZE_DATA  0b00001111  // Masque des bits de la taille des donnees
+#define MASK_RST_MSBYTE 0xFF        // Masque Mise à zéro des bits de poids fort
 
 typedef struct frameSACS_s {
 	uint8_t sid;                  // SUB ID

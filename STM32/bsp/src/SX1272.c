@@ -2931,6 +2931,7 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
 	{
 		state_f = state;
 	}
+
 	return state_f;
 }
 
@@ -4114,6 +4115,7 @@ uint8_t BSP_SX1272_sendPacketMAXTimeout(	uint8_t dest,
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
 */
+// FONCTION MODIFIEE POUR
 uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
 										uint8_t *payload,
 										uint16_t length16,
@@ -4130,7 +4132,7 @@ uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
 
 	if( currentstate._modem == FSK )
 	{
-		BSP_SX1272_setLORA();		  		// Setting LoRa mode
+		BSP_SX1272_setLORA(); // Setting LoRa mode
 	}
 	else
 	{
