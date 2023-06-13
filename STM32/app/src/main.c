@@ -38,10 +38,9 @@ int main()
 	APP_SX1272_setup();
 
 	/* Code controller */
-	while(1)
-	{
-		controllerMain();
-	}
+
+	controllerMain();
+
 }
 
 /*
