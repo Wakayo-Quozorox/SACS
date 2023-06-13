@@ -8,12 +8,12 @@
 #ifndef APP_INC_CONTROLLER_H_
 #define APP_INC_CONTROLLER_H_
 
+#include "main.h"
 #include "appSACS.h"
 #include "delay.h"
-#include "utilities.h"
-#include "main.h"
 
-#define CONTROLLER_DEBUG 1
+/* Uncomment to show debug messages to console */
+#define CONTROLLER_DEBUG
 
 /**
  * @brief Run the controller core function

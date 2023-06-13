@@ -17,12 +17,12 @@ int controllerMain(void) {
 		/* Send LED_TOGGLE packet */
 		if(APP_SACS_send(packetLed) != SEND_OK)
 		{
-			#if CONTROLLER_DEBUG
+			#ifdef CONTROLLER_DEBUG
 				my_printf("Send ERROR\r\n");
 			#endif
 			//return SEND_ERROR;
 		} else {
-			#if CONTROLLER_DEBUG
+			#ifdef CONTROLLER_DEBUG
 				my_printf("Send OK\r\n");
 			#endif
 		}
@@ -33,7 +33,7 @@ int controllerMain(void) {
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
-			#if DEBUG
+			#ifdef CONTROLLER_DEBUG
 				my_printf("Receive OK\r\n");
 			#endif
 			if (receivedPacket.data[0] == packetLed.data[0] && receivedPacket.ack == ACK)
@@ -42,23 +42,23 @@ int controllerMain(void) {
 			}
 			break;
 		case RECEIVE_ERROR:
-			#if DEBUG
+			#ifdef CONTROLLER_DEBUG
 				my_printf("Receive ERROR\r\n");
 			#endif
 			break;
-		case RECEIVE_COMMANND_NOT_EXECUTED:
-			#if DEBUG
+		case RECEIVE_COMMAND_NOT_EXECUTED:
+			#ifdef CONTROLLER_DEBUG
 				my_printf("Command not executed\r\n");
 			#endif
 			break;
 		case CRC_ERROR:
-			#if DEBUG
+			#ifdef CONTROLLER_DEBUG
 				my_printf("CRC ERROR\r\n");
 			#endif
 			break;
 
 		default:
-			#if DEBUG
+			#ifdef CONTROLLER_DEBUG
 				my_printf("Unmanaged receive ERROR\r\n");
 			#endif
 			break;

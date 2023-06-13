@@ -10,7 +10,6 @@
 #include "appSX1272.h"
 #include "SX1272.h"
 #include "comSX1272.h"
-#include "string.h"
 #include "delay.h"
 
 

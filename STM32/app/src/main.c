@@ -8,9 +8,11 @@
 #include "main.h"
 #include "stm32f0xx.h"
 #include "bsp.h"
+
 #include "comSX1272.h"
 #include "SX1272.h"
 #include "appSX1272.h"
+
 #include "appSACS.h"
 #include "controller.h"
 
@@ -18,7 +20,6 @@ static void SystemClock_Config();
 
 int main()
 {
-	int i;
 	// Initialize System clock to 48MHz from external clock
 	SystemClock_Config();
 	// Initialize timebase

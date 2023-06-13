@@ -33,7 +33,7 @@
 /* receive relative defines */
 #define RECEIVE_OK	    	0   
 #define RECEIVE_ERROR		1
-#define RECEIVE_COMMANND_NOT_EXECUTED	2
+#define RECEIVE_COMMAND_NOT_EXECUTED	2
 #define CRC_ERROR	   		3
 #define RECEIVE_TIMEOUT 	3000
 
