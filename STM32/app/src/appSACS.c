@@ -42,20 +42,21 @@ uint8_t APP_SACS_send(frameSACS_s frame)
 	payload[1] = frame.sid<<SHIFT_SID | frame.ack <<SHIFT_ACK | (frame.sizeData-1);
 
 	// DATA //
-	for(uint8_t i=2; i<frame.sizeData+2; i++)
-		payload[i]=frame.data[i-2];
+	for(uint8_t i=NB_BYTE_BEFORE_DATA; i<frame.sizeData+NB_BYTE_BEFORE_DATA; i++)
+		payload[i]=frame.data[i-NB_BYTE_BEFORE_DATA];
 
 	// CRC //
 	APP_SACS_setCRC(payload,size);
 
 	// END OF FRAME //
-	payload[size-1]= 0b00000000;
+	payload[size-1]= END_OF_FRAME;
 
     LgMsg=sizeof(payload) / sizeof(payload[0]);
     error = BSP_SX1272_sendPacketTimeout(dest_address,payload,LgMsg,WaitTxMax);
     
 	return error;
 }
+
 
 ///////////////////////////////////////////////////////////////
 // Reception de la trame
@@ -89,16 +90,17 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
 		}
 		else // on continue
-		{
-        my_printf("\n\r");
-        my_printf("TRAME: ");
-        
+    {
+			my_printf("\n\r");
+			my_printf("TRAME: ");
+
 			for(uint8_t i = 0; i<sizePayload; i++) // Remplissage de la payload avec les donnees recues
-        {
-        	payload[i] = currentstate.packet_received.data[i];
-        	my_printf("%x",payload[i]);
-        	my_printf(" ");
-        }
+			{
+				payload[i] = currentstate.packet_received.data[i];
+				my_printf("%x",payload[i]);
+				my_printf(" ");
+			}
+
 
 			error = APP_SACS_checkCRC(payload, sizePayload); // On check la validité des données reçues
 
@@ -108,27 +110,28 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 			}
 			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
 			{
-        // SID //
-				frame->sid = payload[1]>>SHIFT_SID;
 
-        // ACKNOWLEDGE //
-				frame->ack = payload[1]>>SHIFT_ACK && MASK_ACKNOLEDGE;
+				// SID //
+				frame->sid = payload[INDEX_BYTE_PARAM]>>SHIFT_SID & MASK_SID;
 
-        // SIZE DATA //
-				frame->sizeData = sizePayload-(NB_BYTE_BEFORE_DATA+NB_BYTE_AFTER_DATA);
+				// ACKNOWLEDGE //
+				frame->ack = payload[INDEX_BYTE_PARAM]>>SHIFT_ACK & MASK_ACKNOLEDGE;
 
-        // DATA //
-        my_printf("\n\r");
-        my_printf("DONNEE: ");
+				// SIZE DATA //
+				frame->sizeData = payload[INDEX_BYTE_PARAM] & MASK_SIZE_DATA;
 
-        for(int i = 2; i<frame->sizeData+2; i++)
-        {
+				// DATA //
+				my_printf("\n\r");
+				my_printf("DONNEE: ");
+
+				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
+				{
 					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
-					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);
-        }
-        my_printf("\n\r");
-        
-        // CRC //
+					my_printf("%c",frame->data[i-NB_BYTE_BEFORE_DATA]);
+				}
+				my_printf("\n\r");
+
+				// CRC //
 				frame->crc = (uint16_t)payload[sizePayload - NB_BYTE_AFTER_DATA] << BYTE_SIZE | payload[sizePayload - (NB_BYTE_AFTER_DATA-1)];
         error = APP_SACS_checkCRC(payload, sizePayload); //Check CRC
 			}
