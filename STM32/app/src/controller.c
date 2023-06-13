@@ -46,7 +46,7 @@ int controllerMain(void) {
 				my_printf("Receive ERROR\r\n");
 			#endif
 			break;
-		case RECEIVE_COMMAND_NOT_EXECUTED:
+		case RECEIVE_FAILED:
 			#ifdef CONTROLLER_DEBUG
 				my_printf("Command not executed\r\n");
 			#endif
