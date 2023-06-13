@@ -136,9 +136,9 @@ void APP_SX1272_setup()
   BSP_DELAY_ms(1000);
 }
 
-void APP_SX1272_runTransmit()
+void APP_SX1272_runTransmit(adrr,msg)
 {
-  uint8_t dest_address = TX_Addr;
+  uint8_t dest_address = adrr;
 
   //////////////////////////////////////////////////////////////////////////////////
   // Transmit a packet continuously with a pause of "waitPeriod"
@@ -172,7 +172,7 @@ void APP_SX1272_runTransmit()
 void APP_SX1272_runReceive()
 {
   char StatusRXMessage='0';
-
+  uint8_t a[]={0};
   //////////////////////////////////////////////////////////////////////////////////
   // Receive packets continuously
   if (ConfigOK == 1)
@@ -219,6 +219,7 @@ void APP_SX1272_runReceive()
     my_printf(" ; ");
     for (uint8_t i =0; i < currentstate.packet_received.length-OFFSET_PAYLOADLENGTH; i++)
     {
+      a[i]=currentstate.packet_received.data[i];
       my_printf("%c",currentstate.packet_received.data[i]);
       my_printf(" ");
     }
@@ -239,4 +240,5 @@ void APP_SX1272_runReceive()
     }
   }
   BSP_DELAY_ms(1000);
+  return a,StatusRXMessage;
 }

@@ -14,7 +14,7 @@
 #define MAX_DATA_SIZE 		16		// Taille de la donnee
 #define MAX_PAYLOAD_SIZE 	19		// Taille de la payload
 #define BYTE_SIZE 			8		// Octet
-
+#define DIFF_DATA_SIZE 		1 		// Ecart entre la valeur de la taille codée sur 4bits et le nombre réel d'octets
 
 #define SHIFT_SID         5 // Decalage de sub ID dans l'octet de parametre
 #define SHIFT_ACK         4 // Decalage de l'acknowledge dans l'octet de parametre
@@ -70,6 +70,7 @@
 #define INIT_CRC        0xFFFF      // Initialisation du CRC: tous les bits sont mis à 1
 #define CRC16_POLY      0x1021      // Polynôme CRC-16-CCITT
 
+// Masque Mise à zéro des bits de poids fort
 #define MASK_CRC_MSB	0x8000        // Masque CRC bit de poids fort
 #define MASK_SID        0b00000111  // Masque des bits de l'identifiant du subordonne
 #define MASK_SIZE_DATA  0b00001111  // Masque des bits de la taille des donnees

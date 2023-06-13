@@ -14,6 +14,7 @@
 #include "appSX1272.h"
 
 #include "appSACS.h"
+#include "subordonne.h"
 #include "controller.h"
 
 static void SystemClock_Config();
@@ -33,13 +34,11 @@ int main()
 
 	my_printf("Console ready!\r\n");
 
-	///////////////////////////////////////////
 	//setup SX1272
 	APP_SX1272_setup();
 
-	/* Code controller */
-	controllerMain();
-
+	// Boucle de contrôle de subordonné
+	subordonneMain();
 }
 
 /*
@@ -50,7 +49,6 @@ int main()
  *
  *  Laurent Latorre - 05/08/2017
  */
-
 static void SystemClock_Config()
 {
 	uint32_t	HSE_Status;
