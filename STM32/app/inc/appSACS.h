@@ -14,7 +14,7 @@
 #define MAX_DATA_SIZE 		16		// Taille de la donnee
 #define MAX_PAYLOAD_SIZE 	19		// Taille de la payload
 #define BYTE_SIZE 			8		// Octet
-
+#define DIFF_DATA_SIZE 		1 		// Ecart entre la valeur de la taille codée sur 4bits et le nombre réel d'octets
 
 #define SHIFT_SID         5 // Decalage de sub ID dans l'octet de parametre
 #define SHIFT_ACK         4 // Decalage de l'acknowledge dans l'octet de parametre

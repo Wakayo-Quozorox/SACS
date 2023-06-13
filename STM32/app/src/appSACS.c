@@ -122,9 +122,9 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				// DATA //
 				my_printf("DONNEE: ");
 
-				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData+NB_BYTE_BEFORE_DATA; i++)
+				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData + NB_BYTE_BEFORE_DATA + DIFF_DATA_SIZE; i++)
 				{
-					frame->data[i-NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
+					frame->data[i - NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
 					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);
 				}
 				my_printf("\n\r");
