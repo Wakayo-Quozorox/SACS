@@ -7,7 +7,6 @@
 
 #include "subordonne.h"
 
-
 /* CODE QUI GERE LE SUBORDONNE */
 /* Attend en boucle un message de la part du contrôleur et renvoie un paquet d'acknowledge ou de
  * non acknowledge en fonction du message reçu */
@@ -20,7 +19,7 @@ int subordonneMain(void)
 	while(1)
 	{
         /* Receive data from controller */
-		receiveStatus = APP_SACS_receiveSub(&receivedPacket, RECEIVE_TIMEOUT, SID3);
+		receiveStatus = APP_SACS_receiveSub(&receivedPacket, SUB_RECEIVE_TIMEOUT, SID3);
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
