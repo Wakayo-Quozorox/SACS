@@ -27,7 +27,7 @@ int subordonneMain(void)
 				my_printf("Receive OK\r\n");
 			#endif
 			/* Verification de l'action à réaliser */
-            switch (receivedPacket.data[0]);
+            switch (receivedPacket.data[0])
             {
                 case LED_ON:
                     // BSP_LED_On();
@@ -41,6 +41,11 @@ int subordonneMain(void)
                     // BSP_LED_Toggle();
                 	receivedPacket.ack = ACK;
                     break;
+                default:
+					#if SUBORDONNE_DEBUG
+						my_printf("Unmanaged command\r\n");
+					#endif
+					receivedPacket.ack = NACK;
             }
 			break;
 
@@ -83,7 +88,6 @@ int subordonneMain(void)
 				my_printf("Unmanaged receive error\r\n");
 			#endif
 			receivedPacket.ack = NACK;
-			break;
 		}
 
 		if (receiveStatus != RECEIVE_SUB_NC)
