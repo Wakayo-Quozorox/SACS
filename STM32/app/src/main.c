@@ -38,7 +38,6 @@ int main()
 	APP_SX1272_setup();
 
 	/* Code controller */
-
 	controllerMain();
 
 }

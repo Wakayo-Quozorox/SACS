@@ -13,7 +13,7 @@
 /* DATA management constants */
 #define MAX_DATA_SIZE 		16		// Taille de la donnee
 #define MAX_PAYLOAD_SIZE 	19		// Taille de la payload
-#define BYTE_SIZE 			  8		  // Octet
+#define BYTE_SIZE 			8		// Octet
 
 
 #define SHIFT_SID         5 // Decalage de sub ID dans l'octet de parametre
