@@ -117,12 +117,12 @@ uint8_t APP_SACS_receive(frameSACS_s* frame, uint32_t timeOut)
 				frame->ack = payload[INDEX_BYTE_PARAM]>>SHIFT_ACK & MASK_ACKNOLEDGE;
 
 				// SIZE DATA //
-				frame->sizeData = payload[INDEX_BYTE_PARAM] & MASK_SIZE_DATA;
+				frame->sizeData = (payload[INDEX_BYTE_PARAM] & MASK_SIZE_DATA) + DIFF_DATA_SIZE;
 
 				// DATA //
 				my_printf("DONNEE: ");
 
-				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData + NB_BYTE_BEFORE_DATA + DIFF_DATA_SIZE; i++)
+				for(int i = NB_BYTE_BEFORE_DATA; i<frame->sizeData + NB_BYTE_BEFORE_DATA; i++)
 				{
 					frame->data[i - NB_BYTE_BEFORE_DATA]=payload[NB_BYTE_BEFORE_DATA];
 					my_printf("%x",frame->data[i-NB_BYTE_BEFORE_DATA]);
