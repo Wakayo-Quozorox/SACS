@@ -43,7 +43,8 @@
 
 #define MASK_CRC_MSB	0x8000      // Masque CRC bit de poids fort
 #define MASK_ACKNOLEDGE 0b00000001  // Masque bit d'acknowledge
-#define MASK_RST_MSBYTE 0xFF        // Masque Mise à zéro des bits de poids fort
+#define MASK_RST_MSBYTE 0xFF
+// Masque Mise à zéro des bits de poids fort
 
 typedef struct frameSACS_s {
 	uint8_t sid;                  // SUB ID

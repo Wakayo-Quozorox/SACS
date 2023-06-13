@@ -8,8 +8,6 @@
 #ifndef APP_INC_MAIN_H_
 #define APP_INC_MAIN_H_
 
-#define DEBUG 0
-
 /*
  * printf() and sprintf() from printf-stdarg.c
  */
