@@ -70,8 +70,6 @@
 #define INIT_CRC        0xFFFF      // Initialisation du CRC: tous les bits sont mis à 1
 #define CRC16_POLY      0x1021      // Polynôme CRC-16-CCITT
 
-#define MASK_ACKNOLEDGE 0b00000001  // Masque bit d'acknowledge
-#define MASK_RST_MSBYTE 0xFF
 // Masque Mise à zéro des bits de poids fort
 #define MASK_CRC_MSB	0x8000        // Masque CRC bit de poids fort
 #define MASK_SID        0b00000111  // Masque des bits de l'identifiant du subordonne
