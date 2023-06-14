@@ -19,7 +19,7 @@ int subordonneMain(void)
 	while(1)
 	{
         /* Receive data from controller */
-		receiveStatus = APP_SACS_receiveSub(&receivedPacket, SUB_RECEIVE_TIMEOUT, SID3);
+		receiveStatus = APP_SACS_receiveSub(&receivedPacket, SUB_RECEIVE_TIMEOUT, MYSID);
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
@@ -94,7 +94,7 @@ int subordonneMain(void)
 		{
 			BSP_DELAY_ms(1000); // Laisse un peu le temps
 
-			receivedPacket.sid = CONTROLLER_ID; // Reset l'identifiant
+			receivedPacket.sid = MYSID; // Adresse du subordonne dans la trame retour
 			sendStatus = APP_SACS_send(receivedPacket); /* Send ACK packet */
 			if(sendStatus != SEND_OK)
 			{
