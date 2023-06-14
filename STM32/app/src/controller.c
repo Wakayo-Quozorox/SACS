@@ -56,9 +56,9 @@ int controllerMain(void) {
 				my_printf("CRC ERROR\r\n");
 			#endif
 			break;
-		case RECEIVE_TIMEOUT:
+		case RECEIVE_TIMEOUT_ERROR:
 			#ifdef CONTROLLER_DEBUG
-				my_printf("RECEIVE_TIMEOUT\r\n");
+				my_printf("RECEIVE TIMEOUT ERROR\r\n");
 			#endif
 			break;
 

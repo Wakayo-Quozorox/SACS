@@ -2885,7 +2885,7 @@ uint8_t BSP_SX1272_receivePacketMAXTimeout()
 /*
  Function: Configures the module to BSP_SX1272_receive information.
  Returns: Integer that determines if there has been any error
-   state = 6  --> The command has been executed with timeout
+   state = 6  --> Timeout
    state = 2  --> The command has not been executed
    state = 1  --> There has been an error while executing the command
    state = 0  --> The command has been executed with no errors
