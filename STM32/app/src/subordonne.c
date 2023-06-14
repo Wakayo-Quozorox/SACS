@@ -20,6 +20,10 @@ int subordonneMain(void)
 	{
         /* Receive data from controller */
 		receiveStatus = APP_SACS_receiveSub(&receivedPacket, SUB_RECEIVE_TIMEOUT, SID3);
+	
+		//setup SX1272
+		APP_SX1272_quietSetup();
+
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:
@@ -102,6 +106,10 @@ int subordonneMain(void)
 
 			receivedPacket.sid = CONTROLLER_ID; // Reset l'identifiant
 			sendStatus = APP_SACS_send(receivedPacket); /* Send ACK packet */
+			
+			//setup SX1272
+			APP_SX1272_quietSetup();
+
 			if(sendStatus != SEND_OK)
 			{
 				#if SUBORDONNE_DEBUG
@@ -116,7 +124,7 @@ int subordonneMain(void)
 				#endif
 			}
 		}
-		else
+		else	
 		{
 			// rien du tout
 		}

@@ -2894,22 +2894,14 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
 {
 	uint8_t state = 2;
 	uint8_t state_f = 2;
+	uint8_t st0;
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
 		my_printf("Starting 'receivePacketTimeout'\r\n");
 	#endif
-
-	if( currentstate._modem == FSK )
-	{
-		BSP_SX1272_setLORA();		  		// Setting LoRa mode
-	}
-	else
-	{
-		/// LoRa mode
-		// LoRa standby mode
-		BSP_SX1272_Write(REG_OP_MODE, LORA_STANDBY_MODE);
-	}
+	
+	st0 = BSP_SX1272_Read(REG_OP_MODE);	// Reading config mode
 
 	// set RX mode
 	state = BSP_SX1272_receive();
@@ -2932,6 +2924,8 @@ uint8_t BSP_SX1272_receivePacketTimeout(uint32_t wait)
 	{
 		state_f = state;
 	}
+
+	BSP_SX1272_Write(REG_OP_MODE, st0);
 
 	return state_f;
 }
@@ -3124,7 +3118,7 @@ uint8_t	BSP_SX1272_availableData(uint32_t wait)
 					previous = millis();
 				}
 			}
-
+	
 			// If packet received: Read first uint8_t of the received packet
 			if( header != 0 )
 			{
@@ -4124,6 +4118,7 @@ uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
 {
 	uint8_t state = 2;
 	uint8_t state_f = 2;
+	uint8_t st0 = 0;
 
 	#if (SX1272_debug_mode > 1)
 		my_printf("\r\n");
@@ -4131,16 +4126,7 @@ uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
 		my_printf("Passe dans sendPacketTimeout(uint8_t dest, uint8_t *payload, uint16_t length16, uint32_t wait)\r\n");
 	#endif
 
-	if( currentstate._modem == FSK )
-	{
-		BSP_SX1272_setLORA(); // Setting LoRa mode
-	}
-	else
-	{
-		/// LoRa mode
-		// LoRa standby mode
-		BSP_SX1272_Write(REG_OP_MODE, LORA_STANDBY_MODE);
-	}
+	st0 = BSP_SX1272_Read(REG_OP_MODE);
 
 	state = BSP_SX1272_truncPayload(length16);
 	if( state == 0 )
@@ -4155,6 +4141,9 @@ uint8_t BSP_SX1272_sendPacketTimeout(	uint8_t dest,
 	{
 		state_f = BSP_SX1272_sendWithTimeout(wait);	// Sending the packet
 	}
+ 
+	BSP_SX1272_Write(REG_OP_MODE, st0);
+
 	return state_f;
 }
 

@@ -10,9 +10,10 @@
 #include "main.h"
 #include "appSACS.h"
 #include "delay.h"
+#include "appSX1272.h"
 
 #define SUBORDONNE_DEBUG 		1
-#define SUB_RECEIVE_TIMEOUT 	10000
+#define SUB_RECEIVE_TIMEOUT 	20000
 
 int subordonneMain(void);
 
