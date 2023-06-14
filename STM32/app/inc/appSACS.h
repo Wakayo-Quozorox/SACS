@@ -10,6 +10,9 @@
 
 #include "SX1272.h"
 
+/* Uncomment to show debug messages to console */
+#define APP_SACS_DEBUG
+
 /* DATA management constants */
 #define MAX_DATA_SIZE 		16		// Taille de la donnee
 #define MAX_PAYLOAD_SIZE 	19		// Taille de la payload
@@ -42,11 +45,10 @@
 /* ACK relative defines */
 #define ACK             	1	// La donnee est reconnue
 #define NACK            	0	// La donnee n'est pas reconnue
-#define MASK_ACKNOLEDGE 	0b00000001
 
 /* Addresses */
-#define CONTROLLER_ID		0b000
 /* SID defines */
+#define SID0		        0b000
 #define SID1				0b001
 #define SID2				0b010
 #define SID3				0b011
@@ -64,6 +66,7 @@
 #define SEND_ERROR	    	1
 #define SEND_OK		    	0
 
+/* Timeout */
 #define RECEIVE_TIMEOUT 	3000
 
 #define START_OF_FRAME  0b10101010  // Debut de trame: AA
@@ -73,6 +76,7 @@
 
 // Masque Mise à zéro des bits de poids fort
 #define MASK_CRC_MSB	0x8000        // Masque CRC bit de poids fort
+#define MASK_ACKNOLEDGE 0b00000001  // Masque des bits de l'acknowledge
 #define MASK_SID        0b00000111  // Masque des bits de l'identifiant du subordonne
 #define MASK_SIZE_DATA  0b00001111  // Masque des bits de la taille des donnees
 #define MASK_RST_MSBYTE 0xFF        // Masque Mise à zéro des bits de poids fort
