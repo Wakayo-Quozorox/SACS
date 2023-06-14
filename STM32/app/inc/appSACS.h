@@ -33,11 +33,11 @@
 #define CRC_ERROR         3 // Code d'erreur: Le CRC reçu ne correspond pas au CRC calcule, les donnees sont invalides
 #define CRC_OK			  0 // CRC ok
 
-#define RECEIVE_TIMEOUT	  6 // Code d'erreur : rien n'a ete reçu avant le timeout
-#define RECEIVE_SUB_NC    5 // Code status: Reception d'une trame non adressé au subordonné
-#define RECEIVE_FAILED	  2 // Code d'erreur: La commande n'a pas ete executee
-#define RECEIVE_ERROR	  1 // Code d'erreur: Erreur pendant l'execution de la commande
-#define RECEIVE_OK	      0 // Reception ok
+#define RECEIVE_TIMEOUT_ERROR	6 // Code d'erreur : rien n'a ete reçu avant le timeout
+#define RECEIVE_SUB_NC    		5 // Code status: Reception d'une trame non adressé au subordonné
+#define RECEIVE_FAILED	  		2 // Code d'erreur: La commande n'a pas ete executee
+#define RECEIVE_ERROR	  		1 // Code d'erreur: Erreur pendant l'execution de la commande
+#define RECEIVE_OK	      		0 // Reception ok
 
 /* ACK relative defines */
 #define ACK             	1	// La donnee est reconnue
