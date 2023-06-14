@@ -100,7 +100,7 @@ int subordonneMain(void)
 			receivedPacket.ack = NACK;
 		}
 
-		if ((receiveStatus != RECEIVE_SUB_NC) || (receiveStatus != RECEIVE_TIMEOUT_ERROR))
+		if ((receiveStatus != RECEIVE_SUB_NC) && (receiveStatus != RECEIVE_TIMEOUT_ERROR))
 		{
 			BSP_DELAY_ms(1000); // Laisse un peu le temps
 
