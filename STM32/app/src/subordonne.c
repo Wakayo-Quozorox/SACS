@@ -56,6 +56,12 @@ int subordonneMain(void)
 			receivedPacket.ack = NACK;
 			break;
 
+		case RECEIVE_TIMEOUT:
+			#if SUBORDONNE_DEBUG
+				my_printf("RECEIVE_TIMEOUT\r\n");
+			#endif
+			break;
+
 		case RECEIVE_FAILED:
 			#if SUBORDONNE_DEBUG
 				my_printf("Receive FAIL\r\n");
@@ -90,7 +96,7 @@ int subordonneMain(void)
 			receivedPacket.ack = NACK;
 		}
 
-		if (receiveStatus != RECEIVE_SUB_NC)
+		if ((receiveStatus != RECEIVE_SUB_NC) || (receiveStatus != RECEIVE_TIMEOUT))
 		{
 			BSP_DELAY_ms(1000); // Laisse un peu le temps
 
