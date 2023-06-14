@@ -53,7 +53,7 @@ uint8_t APP_SACS_send(const frameSACS_s frame)
 
     LgMsg=sizeof(payload) / sizeof(payload[0]);
     error = BSP_SX1272_sendPacketTimeout(dest_address,payload,LgMsg,WaitTxMax);
-    
+
 	return error;
 }
 
@@ -79,14 +79,18 @@ uint8_t APP_SACS_receive(frameSACS_s* const frame, const uint32_t timeOut)
     error = BSP_SX1272_receivePacketTimeout(timeOut); // Réceptionne tout ce qui passe avec un timeout
     if (error != RECEIVE_OK)
     {
-    	my_printf("Problème de réception\n\r");
+		#ifdef APP_SACS_DEBUG
+    		my_printf("Problème de réception\n\r");
+		#endif
     }
     else // on continue
     {
 		sizePayload = currentstate._payloadlength;  // Taille totale de la payload
 		if (sizePayload >= MAX_PAYLOAD_SIZE) // On vérifie que le message reçu n'a pas une taille supérieure a la taille max de la trame
 		{
-			my_printf("La taille de la trame reçue est superieure a la taille maximale \n\r");
+			#ifdef APP_SACS_DEBUG
+				my_printf("La taille de la trame reçue est superieure a la taille maximale \n\r");
+			#endif
 			error = SIZE_ERROR; // La trame reçue n'a pas la bonne taille
 		}
 		else // on continue
@@ -107,7 +111,9 @@ uint8_t APP_SACS_receive(frameSACS_s* const frame, const uint32_t timeOut)
 
 			if (error != RECEIVE_OK)  // Les données sont invalides
 			{
+				#ifdef APP_SACS_DEBUG
 				my_printf("CRC invalide, trame ignorée !\r\n");
+				#endif
 			}
 			else // Si les données reçues sont valides, on affiche et on remplit la structure de la trame
 			{
@@ -218,8 +224,10 @@ uint8_t APP_SACS_receiveSub(frameSACS_s* const frame, const uint32_t timeOut, co
 
 	if (status != RECEIVE_OK) // Erreur de reception par le subordonne
 	{
-		my_printf("Problème de réception par le subordonné: ");
-		my_printf("error %d \n\r",status);
+		#ifdef APP_SACS_DEBUG
+			my_printf("Problème de réception par le subordonné: ");
+			my_printf("error %d \n\r",status);
+		#endif
 	}else
 	{
 		if(frameReceive.sid == subId) // Le subordonne est concerne par la trame reçue
