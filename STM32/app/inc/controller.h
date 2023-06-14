@@ -17,7 +17,7 @@
 #define CONTROLLER_DEBUG
 
 #define CON_RECEIVE_TIMEOUT 10000
-#define CON_SEND_RETRIES 3
+#define CON_SEND_TRY 3
 
 /**
  * @brief Run the controller core function

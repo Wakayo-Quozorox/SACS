@@ -60,7 +60,7 @@ int controllerSendCommand(uint8_t command, uint8_t subID)
 	#endif
 
 	APP_SX1272_quietSetup();
-	while (retry < CON_SEND_RETRIES && receiveStatus != RECEIVE_OK )
+	while (retry < CON_SEND_TRY && receiveStatus != RECEIVE_OK )
 	{
 		if(APP_SACS_send(packetToSend) != SEND_OK)
 		{
@@ -87,7 +87,14 @@ int controllerSendCommand(uint8_t command, uint8_t subID)
 			#ifdef CONTROLLER_DEBUG
 				my_printf("Receive OK\r\n");
 			#endif
-			if (receivedPacket.data[0] == packetToSend.data[0] && receivedPacket.ack == ACK)
+			if (receivedPacket.sid != subID)
+			{
+				receiveStatus = RECEIVE_ERROR;
+				#ifdef CONTROLLER_DEBUG
+					my_printf("..but wrong subID\r\n");
+				#endif
+				break;
+			} else if (receivedPacket.data[0] == packetToSend.data[0] && receivedPacket.ack == ACK)
 			{
 				my_printf("Good packet received\r\n");
 			}
@@ -121,7 +128,7 @@ int controllerSendCommand(uint8_t command, uint8_t subID)
 		retry++;
 	}
 
-	if (retry >= CON_SEND_RETRIES)
+	if (retry > CON_SEND_TRY)
 	{
 		#ifdef CONTROLLER_DEBUG
 			my_printf("Send failed\r\n");
