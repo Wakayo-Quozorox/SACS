@@ -19,7 +19,7 @@ int subordonneMain(void)
 	while(1)
 	{
         /* Receive data from controller */
-		receiveStatus = APP_SACS_receiveSub(&receivedPacket, SUB_RECEIVE_TIMEOUT, SID3);
+		receiveStatus = APP_SACS_receiveSub(&receivedPacket, SUB_RECEIVE_TIMEOUT, SID4);
 	
 		//setup SX1272
 		APP_SX1272_quietSetup();
