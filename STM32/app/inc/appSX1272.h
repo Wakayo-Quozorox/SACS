@@ -39,6 +39,7 @@
 #define WaitRxMax 10000 //en ms
 
 void APP_SX1272_setup();
+void APP_SX1272_quietSetup();
 void APP_SX1272_runTransmit();
 void APP_SX1272_runReceive();
 

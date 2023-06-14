@@ -136,6 +136,93 @@ void APP_SX1272_setup()
   BSP_DELAY_ms(1000);
 }
 
+void APP_SX1272_quietSetup()
+{
+  // Power ON the module
+  e = BSP_SX1272_ON(type_modulation);
+  if (e == 0)
+  {
+  }
+  else
+  {
+    ConfigOK = 0;
+  }
+  // Select frequency channel
+  e = BSP_SX1272_setChannel(freq_centrale);
+  if (e == 0)
+  {
+  }
+  else
+  {
+    ConfigOK = 0;
+  }
+  // Select output power
+  e = BSP_SX1272_setPower(OutPower);
+  if (e == 0)
+  {
+  }
+  else
+  {
+    ConfigOK = 0;
+  }
+
+  if (ConfigOK == 1)
+  {
+	//////////////////////////////////////////////////////////////////////
+  //config suppl�mentaire mode LORA
+	//////////////////////////////////////////////////////////////////////
+    if(type_modulation==0)
+    {
+      // Set header
+      e = BSP_SX1272_setHeaderON();
+      // Set transmission mode
+      e = BSP_SX1272_setCR(paramCR);    // CR_5 : CR = 4/5
+      e = BSP_SX1272_setSF(paramSF);   // SF = 12
+      e = BSP_SX1272_setBW(paramBW);    // BW = 125 KHz
+      // Set CRC
+      e = BSP_SX1272_setCRC_ON();
+      // Set the node address
+      e = BSP_SX1272_setNodeAddress(RX_Addr);
+      // Set the length of preamble
+      e = BSP_SX1272_setPreambleLength(PreambLong);
+      // Set the number of transmission retries
+      currentstate._maxRetries = MaxNbRetries;
+    }
+	//////////////////////////////////////////////////////////////////////
+	//config suppl�mentaire mode FSK
+	//////////////////////////////////////////////////////////////////////
+    else
+    {
+      // Set CRC
+      e = BSP_SX1272_setCRC_ON();
+      // Set the node address
+      e = BSP_SX1272_setNodeAddress(RX_Addr);
+      // Set the length of preamble
+      e = BSP_SX1272_setPreambleLength(PreambLong);
+      // Set the number of transmission retries
+      currentstate._maxRetries = MaxNbRetries;
+
+      BSP_SX1272_Write(REG_SYNC_VALUE1,0x05);
+      BSP_SX1272_Write(REG_SYNC_VALUE2,0x05);
+      BSP_SX1272_Write(REG_SYNC_VALUE3,0x05);
+      BSP_SX1272_Write(REG_SYNC_VALUE4,0x05);
+
+	    //Set the frequency deviation an bit rate parameters
+	    BSP_SX1272_Write(REG_FDEV_MSB,(RegFdev>>8)&0x00FF);// FDA = Fstep*FDEV = 61Hz*Fdev : ex: 0x7FF*61 = 125kHz ex2: 0X52*61=5kHz
+	    BSP_SX1272_Write(REG_FDEV_LSB,RegFdev&0x00FF);//...
+      BSP_SX1272_Write(REG_BITRATE_MSB,(RegBitRate>>8)&0x00FF);//FXOSC=32Mz, BR = FXOSC/(Bitrate + BitrateFrac/16), ex: FXOSC/0x682B = 1200 bauds, ex2: FXOSC/0x200=62.5 kbauds
+      BSP_SX1272_Write(REG_BITRATE_LSB,RegBitRate&0x00FF);//...
+
+    }
+  }
+  else
+  {
+  }
+
+  waitPeriod = PeriodTransmission;
+
+}
+
 void APP_SX1272_runTransmit(adrr,msg)
 {
   uint8_t dest_address = adrr;

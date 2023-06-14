@@ -27,8 +27,8 @@ int controllerMain(void) {
 			#endif
 		}
 
+		APP_SX1272_quietSetup();
 		/* Receive data from subordinate */
-
 		receiveStatus = APP_SACS_receive(&receivedPacket, CON_RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{
@@ -68,7 +68,7 @@ int controllerMain(void) {
 			#endif
 			break;
 		}
-
+		APP_SX1272_quietSetup();
 		BSP_DELAY_ms(5000);
 	}
 
