@@ -66,6 +66,7 @@
 #define SEND_ERROR	    	1
 #define SEND_OK		    	0
 
+/* Timeout */
 #define RECEIVE_TIMEOUT 	3000
 
 #define START_OF_FRAME  0b10101010  // Debut de trame: AA
