@@ -117,9 +117,9 @@ void APP_SX1272_setup()
       BSP_SX1272_Write(REG_SYNC_VALUE3,0x05);
       BSP_SX1272_Write(REG_SYNC_VALUE4,0x05);
 
-	  //Set the frequency deviation an bit rate parameters
-	  BSP_SX1272_Write(REG_FDEV_MSB,(RegFdev>>8)&0x00FF);// FDA = Fstep*FDEV = 61Hz*Fdev : ex: 0x7FF*61 = 125kHz ex2: 0X52*61=5kHz
-	  BSP_SX1272_Write(REG_FDEV_LSB,RegFdev&0x00FF);//...
+	    //Set the frequency deviation an bit rate parameters
+	    BSP_SX1272_Write(REG_FDEV_MSB,(RegFdev>>8)&0x00FF);// FDA = Fstep*FDEV = 61Hz*Fdev : ex: 0x7FF*61 = 125kHz ex2: 0X52*61=5kHz
+	    BSP_SX1272_Write(REG_FDEV_LSB,RegFdev&0x00FF);//...
       BSP_SX1272_Write(REG_BITRATE_MSB,(RegBitRate>>8)&0x00FF);//FXOSC=32Mz, BR = FXOSC/(Bitrate + BitrateFrac/16), ex: FXOSC/0x682B = 1200 bauds, ex2: FXOSC/0x200=62.5 kbauds
       BSP_SX1272_Write(REG_BITRATE_LSB,RegBitRate&0x00FF);//...
 

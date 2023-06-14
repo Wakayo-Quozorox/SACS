@@ -64,8 +64,6 @@
 #define SEND_ERROR	    	1
 #define SEND_OK		    	0
 
-#define RECEIVE_TIMEOUT 	3000
-
 #define START_OF_FRAME  0b10101010  // Debut de trame: AA
 #define END_OF_FRAME    0b00000000  // Fin de trame:   00
 #define INIT_CRC        0xFFFF      // Initialisation du CRC: tous les bits sont mis à 1

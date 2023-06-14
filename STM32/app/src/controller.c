@@ -29,7 +29,7 @@ int controllerMain(void) {
 
 		/* Receive data from subordinate */
 
-		receiveStatus = APP_SACS_receive(&receivedPacket, RECEIVE_TIMEOUT);
+		receiveStatus = APP_SACS_receive(&receivedPacket, CON_RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{
 		case RECEIVE_OK:

@@ -37,8 +37,8 @@ int main()
 	//setup SX1272
 	APP_SX1272_setup();
 
-	// Boucle de contrôle de subordonné
-	subordonneMain();
+	/* Code controller */
+	controllerMain();
 }
 
 /*

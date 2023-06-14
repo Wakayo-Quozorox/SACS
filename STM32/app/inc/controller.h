@@ -14,6 +14,8 @@
 
 /* Uncomment to show debug messages to console */
 #define CONTROLLER_DEBUG
+#define CON_RECEIVE_TIMEOUT 10000
+
 
 /**
  * @brief Run the controller core function
