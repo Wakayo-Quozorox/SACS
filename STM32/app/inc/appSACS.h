@@ -11,7 +11,7 @@
 #include "SX1272.h"
 
 /* Uncomment to show debug messages to console */
-#define APP_SACS_DEBUG
+//#define APP_SACS_DEBUG
 
 /* DATA management constants */
 #define MAX_DATA_SIZE 		16		// Taille de la donnee
