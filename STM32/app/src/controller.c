@@ -11,7 +11,7 @@ int controllerMain(void) {
 	
 	while(1)
 	{
-		if (controllerSendCommand(SID3, LED_ON) != EXIT_SUCCESS)
+		if (controllerSendCommand(SID3, LED_ON) != SEND_OK)
 		{
 			my_printf("Error sending command to SID3\r\n");
 		} else {
@@ -19,7 +19,7 @@ int controllerMain(void) {
 		}
 		BSP_DELAY_ms(5000);
 
-		if (controllerSendCommand(SID4, LED_OFF) != EXIT_SUCCESS)
+		if (controllerSendCommand(SID4, LED_OFF) != SEND_OK)
 		{
 			my_printf("Error sending command to SID4\r\n");
 		} else {
@@ -32,7 +32,7 @@ int controllerMain(void) {
 	return EXIT_FAILURE;
 }
 
-int controllerSendCommand(uint8_t command, uint8_t subID)
+int controllerSendCommand(const uint8_t subID, const uint8_t command)
 {
 	frameSACS_s packetToSend = {subID, ACK, LED_PACKET_SIZE, {command}, 0};
 	frameSACS_s receivedPacket = {0};
@@ -59,9 +59,9 @@ int controllerSendCommand(uint8_t command, uint8_t subID)
 		my_printf("Sending to sub %d...\r\n", subID);
 	#endif
 
-	APP_SX1272_quietSetup();
-	while (retry < CON_SEND_TRY && receiveStatus != RECEIVE_OK )
+	while (retry <= CON_SEND_TRY && receiveStatus != RECEIVE_OK )
 	{
+		APP_SX1272_quietSetup();
 		if(APP_SACS_send(packetToSend) != SEND_OK)
 		{
 			#ifdef CONTROLLER_DEBUG
@@ -79,7 +79,7 @@ int controllerSendCommand(uint8_t command, uint8_t subID)
 		#ifdef CONTROLLER_DEBUG
 			my_printf("Receiving from sub %d... Retry %d\r\n", subID, retry);
 		#endif
-
+		APP_SX1272_quietSetup();
 		receiveStatus = APP_SACS_receive(&receivedPacket, CON_RECEIVE_TIMEOUT);
 		switch (receiveStatus)
 		{

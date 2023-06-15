@@ -3132,7 +3132,6 @@ uint8_t	BSP_SX1272_availableData(uint32_t wait)
 	}
 	else
 	{
-		my_printf("On est bien en FSK\r\n"); 
 		/// FSK mode
 		// read REG_IRQ_FLAGS2
 		value = BSP_SX1272_Read(REG_IRQ_FLAGS2);
