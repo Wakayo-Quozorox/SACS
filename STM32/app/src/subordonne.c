@@ -34,15 +34,15 @@ int subordonneMain(void)
             switch (receivedPacket.data[0])
             {
                 case LED_ON:
-                    // BSP_LED_On();
+                    BSP_LED_On();
                 	receivedPacket.ack = ACK;
                     break;
                 case LED_OFF:
-                    // BSP_LED_Off();
+                    BSP_LED_Off();
                 	receivedPacket.ack = ACK;
                     break;
                 case LED_TOGGLE:
-                    // BSP_LED_Toggle();
+                    BSP_LED_Toggle();
                 	receivedPacket.ack = ACK;
                     break;
                 default:

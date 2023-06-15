@@ -29,6 +29,8 @@ int main()
 	BSP_NVIC_Init();
 	// Initialize SPI interface
 	BSP_SPI1_Init();
+	// Initialize LEDs
+	BSP_LED_Init();
 	// Initialize Debug Console
 	BSP_Console_Init();
 

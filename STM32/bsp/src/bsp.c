@@ -1,7 +1,7 @@
 /*
  * bsp.c
  *
- *  Created on: 23 août 2020
+ *  Created on: 23 aoï¿½t 2020
  *      Author: Arnaud
  */
 
@@ -18,44 +18,44 @@ uint32_t timebase_tick_ms;
 void BSP_LED_Init()
 {
 	// Enable GPIOA clock
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
 
-	// Configure PA5 as output
-	GPIOA->MODER &= ~GPIO_MODER_MODER5_Msk;
-	GPIOA->MODER |= (0x01 <<GPIO_MODER_MODER5_Pos);
+	// Configure PC0 as output
+	GPIOC->MODER &= ~GPIO_MODER_MODER0_Msk;
+	GPIOC->MODER |= (0x01 <<GPIO_MODER_MODER0_Pos);
 
-	// Configure PA5 as Push-Pull output
-	GPIOA->OTYPER &= ~GPIO_OTYPER_OT_5;
+	// Configure PC0 as Push-Pull output
+	GPIOC->OTYPER &= ~GPIO_OTYPER_OT_0;
 
-	// Configure PA5 as High-Speed Output
-	GPIOA->OSPEEDR &= ~GPIO_OSPEEDR_OSPEEDR5_Msk;
-	GPIOA->OSPEEDR |= (0x03 <<GPIO_OSPEEDR_OSPEEDR5_Pos);
+	// Configure PC0 as High-Speed Output
+	GPIOC->OSPEEDR &= ~GPIO_OSPEEDR_OSPEEDR0_Msk;
+	GPIOC->OSPEEDR |= (0x03 <<GPIO_OSPEEDR_OSPEEDR0_Pos);
 
-	// Disable PA5 Pull-up/Pull-down
-	GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR5_Msk;
+	// Disable PC0 Pull-up/Pull-down
+	GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR0_Msk;
 
 	// Set Initial State OFF
-	GPIOA->BSRR |= GPIO_BSRR_BR_5;
+	GPIOC->BSRR |= GPIO_BSRR_BR_0;
 }
 
 /*
  * BSP_LED_On()
- * Turn ON LED on PA5
+ * Turn ON LED on PC0
  */
 
 void BSP_LED_On()
 {
-	GPIOA->BSRR = GPIO_BSRR_BS_5;
+	GPIOC->BSRR = GPIO_BSRR_BS_0;
 }
 
 /*
  * BSP_LED_Off()
- * Turn OFF LED on PA5
+ * Turn OFF LED on PC0
  */
 
 void BSP_LED_Off()
 {
-	GPIOA->BSRR = GPIO_BSRR_BR_5;
+	GPIOC->BSRR = GPIO_BSRR_BR_0;
 }
 
 /*
@@ -65,7 +65,7 @@ void BSP_LED_Off()
 
 void BSP_LED_Toggle()
 {
-	GPIOA->ODR ^= GPIO_ODR_5;
+	GPIOC->ODR ^= GPIO_ODR_0;
 }
 
 /*
