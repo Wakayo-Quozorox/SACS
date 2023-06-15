@@ -14,6 +14,8 @@
 #define SUBORDONNE_DEBUG 		1
 #define SUB_RECEIVE_TIMEOUT 	10000
 
+#define MYSID SID3
+
 int subordonneMain(void);
 
 #endif /* APP_INC_CONTROLLER_H_ */
